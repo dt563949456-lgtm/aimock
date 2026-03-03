@@ -14,7 +14,13 @@ import type {
   ToolCall,
   ToolDefinition,
 } from "./types.js";
-import { generateId, generateToolCallId, isTextResponse, isToolCallResponse, isErrorResponse } from "./helpers.js";
+import {
+  generateId,
+  generateToolCallId,
+  isTextResponse,
+  isToolCallResponse,
+  isErrorResponse,
+} from "./helpers.js";
 import { matchFixture } from "./router.js";
 import { writeErrorResponse } from "./sse-writer.js";
 import type { Journal } from "./journal.js";
@@ -88,11 +94,13 @@ export function responsesInputToMessages(req: ResponsesRequest): ChatMessage[] {
       messages.push({
         role: "assistant",
         content: null,
-        tool_calls: [{
-          id: item.call_id ?? generateToolCallId(),
-          type: "function",
-          function: { name: item.name ?? "", arguments: item.arguments ?? "" },
-        }],
+        tool_calls: [
+          {
+            id: item.call_id ?? generateToolCallId(),
+            type: "function",
+            function: { name: item.name ?? "", arguments: item.arguments ?? "" },
+          },
+        ],
       });
     } else if (item.type === "function_call_output") {
       messages.push({
@@ -107,7 +115,9 @@ export function responsesInputToMessages(req: ResponsesRequest): ChatMessage[] {
   return messages;
 }
 
-function responsesToolsToCompletionsTools(tools?: ResponsesToolDef[]): ToolDefinition[] | undefined {
+function responsesToolsToCompletionsTools(
+  tools?: ResponsesToolDef[],
+): ToolDefinition[] | undefined {
   if (!tools || tools.length === 0) return undefined;
   return tools
     .filter((t) => t.type === "function")
@@ -252,13 +262,15 @@ function buildTextStreamEvents(
       created_at: created,
       model,
       status: "completed",
-      output: [{
-        type: "message",
-        id: msgId,
-        status: "completed",
-        role: "assistant",
-        content: [{ type: "output_text", text: content }],
-      }],
+      output: [
+        {
+          type: "message",
+          id: msgId,
+          status: "completed",
+          role: "assistant",
+          content: [{ type: "output_text", text: content }],
+        },
+      ],
       usage: {
         input_tokens: 0,
         output_tokens: 0,
@@ -395,13 +407,15 @@ function buildTextResponse(content: string, model: string): object {
     created_at: Math.floor(Date.now() / 1000),
     model,
     status: "completed",
-    output: [{
-      type: "message",
-      id: msgId,
-      status: "completed",
-      role: "assistant",
-      content: [{ type: "output_text", text: content }],
-    }],
+    output: [
+      {
+        type: "message",
+        id: msgId,
+        status: "completed",
+        role: "assistant",
+        content: [{ type: "output_text", text: content }],
+      },
+    ],
     usage: { input_tokens: 0, output_tokens: 0, total_tokens: 0 },
   };
 }
@@ -497,7 +511,11 @@ export async function handleResponses(
       res,
       404,
       JSON.stringify({
-        error: { message: "No fixture matched", type: "invalid_request_error", code: "no_fixture_match" },
+        error: {
+          message: "No fixture matched",
+          type: "invalid_request_error",
+          code: "no_fixture_match",
+        },
       }),
     );
     return;

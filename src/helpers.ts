@@ -183,7 +183,7 @@ export function buildToolCallCompletion(toolCalls: ToolCall[], model: string): C
         message: {
           role: "assistant",
           content: null,
-          tool_calls: toolCalls.map((tc, idx) => ({
+          tool_calls: toolCalls.map((tc) => ({
             id: tc.id || generateToolCallId(),
             type: "function" as const,
             function: { name: tc.name, arguments: tc.arguments },

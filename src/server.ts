@@ -295,17 +295,25 @@ export async function createServer(
 
     // POST /v1/responses — OpenAI Responses API
     if (pathname === RESPONSES_PATH && req.method === "POST") {
-      readBody(req).then((raw) =>
-        handleResponses(req, res, raw, fixtures, journal, defaults, setCorsHeaders)
-      ).catch((err: unknown) => {
-        const msg = err instanceof Error ? err.message : "Internal error";
-        if (!res.headersSent) {
-          writeErrorResponse(res, 500, JSON.stringify({ error: { message: msg, type: "server_error" } }));
-        } else if (!res.writableEnded) {
-          try { res.write(`event: error\ndata: ${JSON.stringify({ error: { message: msg } })}\n\n`); } catch { /* */ }
-          res.end();
-        }
-      });
+      readBody(req)
+        .then((raw) => handleResponses(req, res, raw, fixtures, journal, defaults, setCorsHeaders))
+        .catch((err: unknown) => {
+          const msg = err instanceof Error ? err.message : "Internal error";
+          if (!res.headersSent) {
+            writeErrorResponse(
+              res,
+              500,
+              JSON.stringify({ error: { message: msg, type: "server_error" } }),
+            );
+          } else if (!res.writableEnded) {
+            try {
+              res.write(`event: error\ndata: ${JSON.stringify({ error: { message: msg } })}\n\n`);
+            } catch {
+              /* */
+            }
+            res.end();
+          }
+        });
       return;
     }
 
