@@ -586,7 +586,7 @@ describe("readBody error path", () => {
     // when the socket is destroyed. We advertise a Content-Length far larger
     // than the data we actually send, then destroy the socket. This causes
     // the async iterator in readBody() to emit an error (premature close).
-    const result = await new Promise<{ status: number; body: string }>((resolve, reject) => {
+    await new Promise<{ status: number; body: string }>((resolve) => {
       const socket = net.createConnection({ host: "127.0.0.1", port }, () => {
         const partialBody = '{"model":"gpt-4","mess';
         const headers = [
@@ -743,9 +743,7 @@ describe("concurrent request handling", () => {
     };
 
     // Fire 10 requests in parallel
-    const results = await Promise.all(
-      Array.from({ length: 10 }, () => post(url, body)),
-    );
+    const results = await Promise.all(Array.from({ length: 10 }, () => post(url, body)));
 
     // All 10 should succeed as valid SSE streams
     for (const res of results) {
@@ -813,9 +811,7 @@ describe("header forwarding in journal", () => {
     const entry = instance.journal.getLast();
     expect(entry).not.toBeNull();
     expect(entry!.headers["host"]).toBeDefined();
-    expect(entry!.headers["content-length"]).toBe(
-      String(Buffer.byteLength(JSON.stringify(body))),
-    );
+    expect(entry!.headers["content-length"]).toBe(String(Buffer.byteLength(JSON.stringify(body))));
     expect(entry!.headers["content-type"]).toBe("application/json");
   });
 

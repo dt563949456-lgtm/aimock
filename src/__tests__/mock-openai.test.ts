@@ -279,7 +279,7 @@ describe("MockOpenAI", () => {
         return realClose(() => {
           if (cb) cb(new Error("close failed"));
         });
-      }) as typeof internal.serverInstance!.server.close;
+      }) as unknown as typeof realClose;
 
       await expect(mock.stop()).rejects.toThrow("close failed");
 
@@ -436,10 +436,16 @@ describe("MockOpenAI", () => {
       mock.onToolCall("get_weather", { content: "sunny" });
       await mock.start();
 
-      const res = await post(mock.url, {
+      await post(mock.url, {
         model: "gpt-4",
         messages: [
-          { role: "assistant", content: null, tool_calls: [{ id: "tc1", type: "function", function: { name: "get_weather", arguments: "{}" } }] },
+          {
+            role: "assistant",
+            content: null,
+            tool_calls: [
+              { id: "tc1", type: "function", function: { name: "get_weather", arguments: "{}" } },
+            ],
+          },
           { role: "tool", content: "result", tool_call_id: "tc1" },
         ],
       });

@@ -214,11 +214,7 @@ describe("buildToolCallChunks", () => {
   });
 
   it("handles empty arguments string with role + initial + finish", () => {
-    const chunks = buildToolCallChunks(
-      [{ name: "fn", arguments: "" }],
-      "gpt-4",
-      20,
-    );
+    const chunks = buildToolCallChunks([{ name: "fn", arguments: "" }], "gpt-4", 20);
     // role + initial tool call chunk + finish = 3 (no arg chunks since args is empty)
     expect(chunks.length).toBe(3);
 
@@ -252,11 +248,7 @@ describe("buildToolCallChunks", () => {
   });
 
   it("produces a single arg chunk when arguments are shorter than chunkSize", () => {
-    const chunks = buildToolCallChunks(
-      [{ name: "fn", arguments: '{"x":1}' }],
-      "gpt-4",
-      100,
-    );
+    const chunks = buildToolCallChunks([{ name: "fn", arguments: '{"x":1}' }], "gpt-4", 100);
     // role + initial + 1 arg chunk + finish = 4
     expect(chunks.length).toBe(4);
 
