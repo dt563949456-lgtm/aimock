@@ -338,3 +338,169 @@ describe("POST /model/{id}/converse (reasoning non-streaming)", () => {
     expect(content[0].text).toBe("Just plain text.");
   });
 });
+
+// ─── Ollama /api/chat: Reasoning ────────────────────────────────────────────
+
+function parseNDJSON(body: string): object[] {
+  return body
+    .split("\n")
+    .filter((line) => line.trim() !== "")
+    .map((line) => JSON.parse(line) as object);
+}
+
+describe("POST /api/chat (reasoning non-streaming)", () => {
+  it("includes reasoning_content on assistant message", async () => {
+    instance = await createServer(allFixtures);
+    const res = await post(`${instance.url}/api/chat`, {
+      model: "deepseek-r1",
+      messages: [{ role: "user", content: "think" }],
+      stream: false,
+    });
+
+    expect(res.status).toBe(200);
+    const body = JSON.parse(res.body);
+    expect(body.message.content).toBe("The answer is 42.");
+    expect(body.message.reasoning_content).toBe("Let me think step by step about this problem.");
+  });
+
+  it("omits reasoning_content when reasoning is absent", async () => {
+    instance = await createServer(allFixtures);
+    const res = await post(`${instance.url}/api/chat`, {
+      model: "deepseek-r1",
+      messages: [{ role: "user", content: "plain" }],
+      stream: false,
+    });
+
+    const body = JSON.parse(res.body);
+    expect(body.message.content).toBe("Just plain text.");
+    expect(body.message.reasoning_content).toBeUndefined();
+  });
+});
+
+describe("POST /api/chat (reasoning streaming)", () => {
+  it("streams reasoning_content chunks before content chunks", async () => {
+    instance = await createServer(allFixtures);
+    const res = await post(`${instance.url}/api/chat`, {
+      model: "deepseek-r1",
+      messages: [{ role: "user", content: "think" }],
+      stream: true,
+    });
+
+    expect(res.status).toBe(200);
+    const chunks = parseNDJSON(res.body) as {
+      message: { role: string; content: string; reasoning_content?: string };
+      done: boolean;
+    }[];
+
+    const reasoningChunks = chunks.filter(
+      (c) => !c.done && c.message.reasoning_content !== undefined,
+    );
+    expect(reasoningChunks.length).toBeGreaterThan(0);
+    const fullReasoning = reasoningChunks.map((c) => c.message.reasoning_content).join("");
+    expect(fullReasoning).toBe("Let me think step by step about this problem.");
+
+    const contentChunks = chunks.filter(
+      (c) => !c.done && c.message.content !== "" && c.message.reasoning_content === undefined,
+    );
+    expect(contentChunks.length).toBeGreaterThan(0);
+    const fullContent = contentChunks.map((c) => c.message.content).join("");
+    expect(fullContent).toBe("The answer is 42.");
+  });
+
+  it("no reasoning_content chunks when reasoning is absent", async () => {
+    instance = await createServer(allFixtures);
+    const res = await post(`${instance.url}/api/chat`, {
+      model: "deepseek-r1",
+      messages: [{ role: "user", content: "plain" }],
+      stream: true,
+    });
+
+    const chunks = parseNDJSON(res.body) as {
+      message: { reasoning_content?: string };
+      done: boolean;
+    }[];
+
+    const reasoningChunks = chunks.filter(
+      (c) => !c.done && c.message.reasoning_content !== undefined,
+    );
+    expect(reasoningChunks).toHaveLength(0);
+  });
+});
+
+// ─── Ollama /api/generate: Reasoning ────────────────────────────────────────
+
+describe("POST /api/generate (reasoning non-streaming)", () => {
+  it("includes reasoning_content field", async () => {
+    instance = await createServer(allFixtures);
+    const res = await post(`${instance.url}/api/generate`, {
+      model: "deepseek-r1",
+      prompt: "think",
+      stream: false,
+    });
+
+    expect(res.status).toBe(200);
+    const body = JSON.parse(res.body);
+    expect(body.response).toBe("The answer is 42.");
+    expect(body.reasoning_content).toBe("Let me think step by step about this problem.");
+  });
+
+  it("omits reasoning_content when reasoning is absent", async () => {
+    instance = await createServer(allFixtures);
+    const res = await post(`${instance.url}/api/generate`, {
+      model: "deepseek-r1",
+      prompt: "plain",
+      stream: false,
+    });
+
+    const body = JSON.parse(res.body);
+    expect(body.response).toBe("Just plain text.");
+    expect(body.reasoning_content).toBeUndefined();
+  });
+});
+
+describe("POST /api/generate (reasoning streaming)", () => {
+  it("streams reasoning_content chunks before response chunks", async () => {
+    instance = await createServer(allFixtures);
+    const res = await post(`${instance.url}/api/generate`, {
+      model: "deepseek-r1",
+      prompt: "think",
+      stream: true,
+    });
+
+    expect(res.status).toBe(200);
+    const chunks = parseNDJSON(res.body) as {
+      response: string;
+      reasoning_content?: string;
+      done: boolean;
+    }[];
+
+    const reasoningChunks = chunks.filter((c) => !c.done && c.reasoning_content !== undefined);
+    expect(reasoningChunks.length).toBeGreaterThan(0);
+    const fullReasoning = reasoningChunks.map((c) => c.reasoning_content).join("");
+    expect(fullReasoning).toBe("Let me think step by step about this problem.");
+
+    const contentChunks = chunks.filter(
+      (c) => !c.done && c.response !== "" && c.reasoning_content === undefined,
+    );
+    expect(contentChunks.length).toBeGreaterThan(0);
+    const fullContent = contentChunks.map((c) => c.response).join("");
+    expect(fullContent).toBe("The answer is 42.");
+  });
+
+  it("no reasoning_content chunks when reasoning is absent", async () => {
+    instance = await createServer(allFixtures);
+    const res = await post(`${instance.url}/api/generate`, {
+      model: "deepseek-r1",
+      prompt: "plain",
+      stream: true,
+    });
+
+    const chunks = parseNDJSON(res.body) as {
+      reasoning_content?: string;
+      done: boolean;
+    }[];
+
+    const reasoningChunks = chunks.filter((c) => !c.done && c.reasoning_content !== undefined);
+    expect(reasoningChunks).toHaveLength(0);
+  });
+});

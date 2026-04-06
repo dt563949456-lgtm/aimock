@@ -121,8 +121,25 @@ function ollamaGenerateToCompletionRequest(req: OllamaGenerateRequest): ChatComp
 
 // ─── Response builders: /api/chat ────────────────────────────────────────────
 
-function buildOllamaChatTextChunks(content: string, model: string, chunkSize: number): object[] {
+function buildOllamaChatTextChunks(
+  content: string,
+  model: string,
+  chunkSize: number,
+  reasoning?: string,
+): object[] {
   const chunks: object[] = [];
+
+  // Reasoning chunks (before content)
+  if (reasoning) {
+    for (let i = 0; i < reasoning.length; i += chunkSize) {
+      const slice = reasoning.slice(i, i + chunkSize);
+      chunks.push({
+        model,
+        message: { role: "assistant", content: "", reasoning_content: slice },
+        done: false,
+      });
+    }
+  }
 
   for (let i = 0; i < content.length; i += chunkSize) {
     const slice = content.slice(i, i + chunkSize);
@@ -144,10 +161,14 @@ function buildOllamaChatTextChunks(content: string, model: string, chunkSize: nu
   return chunks;
 }
 
-function buildOllamaChatTextResponse(content: string, model: string): object {
+function buildOllamaChatTextResponse(content: string, model: string, reasoning?: string): object {
   return {
     model,
-    message: { role: "assistant", content },
+    message: {
+      role: "assistant",
+      content,
+      ...(reasoning !== undefined ? { reasoning_content: reasoning } : {}),
+    },
     done: true,
     ...DURATION_FIELDS,
   };
@@ -240,9 +261,24 @@ function buildOllamaGenerateTextChunks(
   content: string,
   model: string,
   chunkSize: number,
+  reasoning?: string,
 ): object[] {
   const chunks: object[] = [];
   const createdAt = new Date().toISOString();
+
+  // Reasoning chunks (before content)
+  if (reasoning) {
+    for (let i = 0; i < reasoning.length; i += chunkSize) {
+      const slice = reasoning.slice(i, i + chunkSize);
+      chunks.push({
+        model,
+        created_at: createdAt,
+        response: "",
+        reasoning_content: slice,
+        done: false,
+      });
+    }
+  }
 
   for (let i = 0; i < content.length; i += chunkSize) {
     const slice = content.slice(i, i + chunkSize);
@@ -267,11 +303,16 @@ function buildOllamaGenerateTextChunks(
   return chunks;
 }
 
-function buildOllamaGenerateTextResponse(content: string, model: string): object {
+function buildOllamaGenerateTextResponse(
+  content: string,
+  model: string,
+  reasoning?: string,
+): object {
   return {
     model,
     created_at: new Date().toISOString(),
     response: content,
+    ...(reasoning !== undefined ? { reasoning_content: reasoning } : {}),
     done: true,
     ...DURATION_FIELDS,
     context: [],
@@ -448,11 +489,20 @@ export async function handleOllama(
       response: { status: 200, fixture },
     });
     if (!streaming) {
-      const body = buildOllamaChatTextResponse(response.content, completionReq.model);
+      const body = buildOllamaChatTextResponse(
+        response.content,
+        completionReq.model,
+        response.reasoning,
+      );
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(JSON.stringify(body));
     } else {
-      const chunks = buildOllamaChatTextChunks(response.content, completionReq.model, chunkSize);
+      const chunks = buildOllamaChatTextChunks(
+        response.content,
+        completionReq.model,
+        chunkSize,
+        response.reasoning,
+      );
       const interruption = createInterruptionSignal(fixture);
       const completed = await writeNDJSONStream(res, chunks, {
         latency,
@@ -691,7 +741,11 @@ export async function handleOllamaGenerate(
       response: { status: 200, fixture },
     });
     if (!streaming) {
-      const body = buildOllamaGenerateTextResponse(response.content, completionReq.model);
+      const body = buildOllamaGenerateTextResponse(
+        response.content,
+        completionReq.model,
+        response.reasoning,
+      );
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(JSON.stringify(body));
     } else {
@@ -699,6 +753,7 @@ export async function handleOllamaGenerate(
         response.content,
         completionReq.model,
         chunkSize,
+        response.reasoning,
       );
       const interruption = createInterruptionSignal(fixture);
       const completed = await writeNDJSONStream(res, chunks, {
