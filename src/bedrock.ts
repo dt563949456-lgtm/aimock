@@ -198,12 +198,18 @@ export function bedrockToCompletionRequest(
 
 // ─── Response builders ──────────────────────────────────────────────────────
 
-function buildBedrockTextResponse(content: string, model: string): object {
+function buildBedrockTextResponse(content: string, model: string, reasoning?: string): object {
+  const contentBlocks: object[] = [];
+  if (reasoning) {
+    contentBlocks.push({ type: "thinking", thinking: reasoning });
+  }
+  contentBlocks.push({ type: "text", text: content });
+
   return {
     id: generateMessageId(),
     type: "message",
     role: "assistant",
-    content: [{ type: "text", text: content }],
+    content: contentBlocks,
     model,
     stop_reason: "end_turn",
     stop_sequence: null,
@@ -417,7 +423,11 @@ export async function handleBedrock(
       body: completionReq,
       response: { status: 200, fixture },
     });
-    const body = buildBedrockTextResponse(response.content, completionReq.model);
+    const body = buildBedrockTextResponse(
+      response.content,
+      completionReq.model,
+      response.reasoning,
+    );
     res.writeHead(200, { "Content-Type": "application/json" });
     res.end(JSON.stringify(body));
     return;
@@ -463,6 +473,7 @@ export async function handleBedrock(
 export function buildBedrockStreamTextEvents(
   content: string,
   chunkSize: number,
+  reasoning?: string,
 ): Array<{ eventType: string; payload: object }> {
   const events: Array<{ eventType: string; payload: object }> = [];
 
@@ -471,9 +482,37 @@ export function buildBedrockStreamTextEvents(
     payload: { role: "assistant" },
   });
 
+  // Thinking block (emitted before text when reasoning is present)
+  if (reasoning) {
+    const blockIndex = 0;
+    events.push({
+      eventType: "contentBlockStart",
+      payload: { contentBlockIndex: blockIndex, start: { type: "thinking" } },
+    });
+
+    for (let i = 0; i < reasoning.length; i += chunkSize) {
+      const slice = reasoning.slice(i, i + chunkSize);
+      events.push({
+        eventType: "contentBlockDelta",
+        payload: {
+          contentBlockIndex: blockIndex,
+          delta: { type: "thinking_delta", thinking: slice },
+        },
+      });
+    }
+
+    events.push({
+      eventType: "contentBlockStop",
+      payload: { contentBlockIndex: blockIndex },
+    });
+  }
+
+  // Text block
+  const textBlockIndex = reasoning ? 1 : 0;
+
   events.push({
     eventType: "contentBlockStart",
-    payload: { contentBlockIndex: 0, start: {} },
+    payload: { contentBlockIndex: textBlockIndex, start: {} },
   });
 
   for (let i = 0; i < content.length; i += chunkSize) {
@@ -481,7 +520,7 @@ export function buildBedrockStreamTextEvents(
     events.push({
       eventType: "contentBlockDelta",
       payload: {
-        contentBlockIndex: 0,
+        contentBlockIndex: textBlockIndex,
         delta: { type: "text_delta", text: slice },
       },
     });
@@ -489,7 +528,7 @@ export function buildBedrockStreamTextEvents(
 
   events.push({
     eventType: "contentBlockStop",
-    payload: { contentBlockIndex: 0 },
+    payload: { contentBlockIndex: textBlockIndex },
   });
 
   events.push({
@@ -728,7 +767,7 @@ export async function handleBedrockStream(
       body: completionReq,
       response: { status: 200, fixture },
     });
-    const events = buildBedrockStreamTextEvents(response.content, chunkSize);
+    const events = buildBedrockStreamTextEvents(response.content, chunkSize, response.reasoning);
     const interruption = createInterruptionSignal(fixture);
     const completed = await writeEventStream(res, events, {
       latency,

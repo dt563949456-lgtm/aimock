@@ -265,3 +265,37 @@ describe("POST /v1beta/models/{model}:streamGenerateContent (reasoning streaming
     expect(thoughtChunks).toHaveLength(0);
   });
 });
+
+// ─── Bedrock InvokeModel: Reasoning ─────────────────────────────────────────
+
+describe("POST /model/{id}/invoke (reasoning non-streaming)", () => {
+  it("includes thinking content block before text block", async () => {
+    instance = await createServer(allFixtures);
+    const res = await post(`${instance.url}/model/anthropic.claude-3-sonnet-20240229-v1:0/invoke`, {
+      messages: [{ role: "user", content: [{ type: "text", text: "think" }] }],
+      max_tokens: 1024,
+      anthropic_version: "bedrock-2023-05-31",
+    });
+
+    expect(res.status).toBe(200);
+    const body = JSON.parse(res.body);
+    expect(body.content).toHaveLength(2);
+    expect(body.content[0].type).toBe("thinking");
+    expect(body.content[0].thinking).toBe("Let me think step by step about this problem.");
+    expect(body.content[1].type).toBe("text");
+    expect(body.content[1].text).toBe("The answer is 42.");
+  });
+
+  it("no thinking block when reasoning is absent", async () => {
+    instance = await createServer(allFixtures);
+    const res = await post(`${instance.url}/model/anthropic.claude-3-sonnet-20240229-v1:0/invoke`, {
+      messages: [{ role: "user", content: [{ type: "text", text: "plain" }] }],
+      max_tokens: 1024,
+      anthropic_version: "bedrock-2023-05-31",
+    });
+
+    const body = JSON.parse(res.body);
+    expect(body.content).toHaveLength(1);
+    expect(body.content[0].type).toBe("text");
+  });
+});
