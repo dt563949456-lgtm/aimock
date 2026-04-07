@@ -251,14 +251,14 @@ describe("POST /v1/responses (web search streaming)", () => {
 
     const events = parseResponsesSSEEvents(res.body);
     const completed = events.find((e) => e.type === "response.completed") as SSEEvent & {
-      response: { output: { type: string; action?: { query: string } }[] };
+      response: { output: { type: string; action: { query: string } }[] };
     };
     expect(completed).toBeDefined();
 
     const searchOutputs = completed.response.output.filter((o) => o.type === "web_search_call");
     expect(searchOutputs).toHaveLength(2);
-    expect(searchOutputs[0].action!.query).toBe("latest news");
-    expect(searchOutputs[1].action!.query).toBe("weather forecast");
+    expect(searchOutputs[0].action.query).toBe("latest news");
+    expect(searchOutputs[1].action.query).toBe("weather forecast");
   });
 });
 
