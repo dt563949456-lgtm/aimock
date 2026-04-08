@@ -212,9 +212,9 @@ export class LLMock {
     this.journal.clear();
   }
 
-  resetMatchCounts(): this {
+  resetMatchCounts(testId?: string): this {
     if (this.serverInstance) {
-      this.serverInstance.journal.clearMatchCounts();
+      this.serverInstance.journal.clearMatchCounts(testId);
     }
     return this;
   }

@@ -24,6 +24,7 @@ import {
   isErrorResponse,
   generateToolCallId,
   flattenHeaders,
+  getTestId,
 } from "./helpers.js";
 import { matchFixture } from "./router.js";
 import { writeErrorResponse, delay, calculateDelay } from "./sse-writer.js";
@@ -504,16 +505,17 @@ export async function handleGemini(
   // Convert to ChatCompletionRequest for fixture matching
   const completionReq = geminiToCompletionRequest(geminiReq, model, streaming);
 
+  const testId = getTestId(req);
   const fixture = matchFixture(
     fixtures,
     completionReq,
-    journal.fixtureMatchCounts,
+    journal.getFixtureMatchCountsForTest(testId),
     defaults.requestTransform,
   );
   const path = req.url ?? `/v1beta/models/${model}:generateContent`;
 
   if (fixture) {
-    journal.incrementFixtureMatchCount(fixture, fixtures);
+    journal.incrementFixtureMatchCount(fixture, fixtures, testId);
   }
 
   if (

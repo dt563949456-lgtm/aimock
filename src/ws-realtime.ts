@@ -17,7 +17,7 @@ import {
 } from "./helpers.js";
 import { createInterruptionSignal } from "./interruption.js";
 import { delay } from "./sse-writer.js";
-import type { Journal } from "./journal.js";
+import { DEFAULT_TEST_ID, type Journal } from "./journal.js";
 import type { Logger } from "./logger.js";
 import type { WebSocketConnection } from "./ws-framing.js";
 
@@ -137,6 +137,7 @@ export function handleWebSocketRealtime(
     logger: Logger;
     strict?: boolean;
     requestTransform?: (req: ChatCompletionRequest) => ChatCompletionRequest;
+    testId?: string;
   },
 ): void {
   const { logger } = defaults;
@@ -190,6 +191,7 @@ async function processMessage(
     logger: Logger;
     strict?: boolean;
     requestTransform?: (req: ChatCompletionRequest) => ChatCompletionRequest;
+    testId?: string;
   },
   session: SessionConfig,
   conversationItems: RealtimeItem[],
@@ -267,6 +269,7 @@ async function handleResponseCreate(
     logger: Logger;
     strict?: boolean;
     requestTransform?: (req: ChatCompletionRequest) => ChatCompletionRequest;
+    testId?: string;
   },
   session: SessionConfig,
   conversationItems: RealtimeItem[],
@@ -279,16 +282,17 @@ async function handleResponseCreate(
     messages,
   };
 
+  const testId = defaults.testId ?? DEFAULT_TEST_ID;
   const fixture = matchFixture(
     fixtures,
     completionReq,
-    journal.fixtureMatchCounts,
+    journal.getFixtureMatchCountsForTest(testId),
     defaults.requestTransform,
   );
   const responseId = generateId("resp");
 
   if (fixture) {
-    journal.incrementFixtureMatchCount(fixture, fixtures);
+    journal.incrementFixtureMatchCount(fixture, fixtures, testId);
   }
 
   if (!fixture) {

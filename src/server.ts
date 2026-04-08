@@ -25,6 +25,7 @@ import {
   isContentWithToolCallsResponse,
   isErrorResponse,
   flattenHeaders,
+  getTestId,
 } from "./helpers.js";
 import { handleResponses } from "./responses.js";
 import { handleMessages } from "./messages.js";
@@ -343,15 +344,16 @@ async function handleCompletions(
   }
 
   // Match fixture
+  const testId = getTestId(req);
   const fixture = matchFixture(
     fixtures,
     body,
-    journal.fixtureMatchCounts,
+    journal.getFixtureMatchCountsForTest(testId),
     defaults.requestTransform,
   );
 
   if (fixture) {
-    journal.incrementFixtureMatchCount(fixture, fixtures);
+    journal.incrementFixtureMatchCount(fixture, fixtures, testId);
   }
 
   const method = req.method ?? "POST";
@@ -1413,21 +1415,25 @@ export async function createServer(
     });
 
     // Route to handler
+    const wsTestId = getTestId(req);
     if (pathname === RESPONSES_PATH) {
       handleWebSocketResponses(ws, fixtures, journal, {
         ...defaults,
         model: "gpt-4",
+        testId: wsTestId,
       });
     } else if (pathname === REALTIME_PATH) {
       const model = parsedUrl.searchParams.get("model") ?? "gpt-4o-realtime";
       handleWebSocketRealtime(ws, fixtures, journal, {
         ...defaults,
         model,
+        testId: wsTestId,
       });
     } else if (pathname === GEMINI_LIVE_PATH) {
       handleWebSocketGeminiLive(ws, fixtures, journal, {
         ...defaults,
         model: "gemini-2.0-flash",
+        testId: wsTestId,
       });
     }
   }

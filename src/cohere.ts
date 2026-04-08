@@ -26,6 +26,7 @@ import {
   isToolCallResponse,
   isErrorResponse,
   flattenHeaders,
+  getTestId,
 } from "./helpers.js";
 import { matchFixture } from "./router.js";
 import { writeErrorResponse, delay, calculateDelay } from "./sse-writer.js";
@@ -465,15 +466,16 @@ export async function handleCohere(
   // Convert to ChatCompletionRequest for fixture matching
   const completionReq = cohereToCompletionRequest(cohereReq);
 
+  const testId = getTestId(req);
   const fixture = matchFixture(
     fixtures,
     completionReq,
-    journal.fixtureMatchCounts,
+    journal.getFixtureMatchCountsForTest(testId),
     defaults.requestTransform,
   );
 
   if (fixture) {
-    journal.incrementFixtureMatchCount(fixture, fixtures);
+    journal.incrementFixtureMatchCount(fixture, fixtures, testId);
   }
 
   if (

@@ -410,6 +410,27 @@ export function matchesPattern(text: string, pattern: string | RegExp): boolean 
   return pattern.test(text);
 }
 
+export function getTestId(req: http.IncomingMessage): string {
+  const headerValue = req.headers["x-test-id"];
+  if (Array.isArray(headerValue)) {
+    if (headerValue.length > 0 && headerValue[0]) return headerValue[0];
+  } else if (typeof headerValue === "string" && headerValue) {
+    return headerValue;
+  }
+
+  const url = req.url ?? "/";
+  const qIdx = url.indexOf("?");
+  if (qIdx !== -1) {
+    const params = new URLSearchParams(url.slice(qIdx + 1));
+    const queryValue = params.get("testId");
+    if (queryValue) return queryValue;
+  }
+
+  // Duplicated from journal.ts DEFAULT_TEST_ID — importing it here would create
+  // a circular dependency (journal.ts imports from helpers.ts).
+  return "__default__";
+}
+
 // ─── Embedding helpers ─────────────────────────────────────────────────────
 
 const DEFAULT_EMBEDDING_DIMENSIONS = 1536;

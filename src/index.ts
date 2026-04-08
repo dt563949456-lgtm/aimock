@@ -13,7 +13,7 @@ export { Logger } from "./logger.js";
 export type { LogLevel } from "./logger.js";
 
 // Journal
-export { Journal } from "./journal.js";
+export { Journal, DEFAULT_TEST_ID } from "./journal.js";
 
 // Router
 export { matchFixture, getTextContent } from "./router.js";

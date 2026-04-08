@@ -14,6 +14,7 @@ import {
   generateDeterministicEmbedding,
   buildEmbeddingResponse,
   flattenHeaders,
+  getTestId,
 } from "./helpers.js";
 import { matchFixture } from "./router.js";
 import { writeErrorResponse } from "./sse-writer.js";
@@ -86,15 +87,16 @@ export async function handleEmbeddings(
     embeddingInput: combinedInput,
   };
 
+  const testId = getTestId(req);
   const fixture = matchFixture(
     fixtures,
     syntheticReq,
-    journal.fixtureMatchCounts,
+    journal.getFixtureMatchCountsForTest(testId),
     defaults.requestTransform,
   );
 
   if (fixture) {
-    journal.incrementFixtureMatchCount(fixture, fixtures);
+    journal.incrementFixtureMatchCount(fixture, fixtures, testId);
   }
 
   if (
