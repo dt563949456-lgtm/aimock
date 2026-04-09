@@ -28,27 +28,27 @@ await mock.stop();
 
 aimock mocks everything your AI app talks to:
 
-| Tool           | What it mocks                                                     | Docs                                                     |
-| -------------- | ----------------------------------------------------------------- | -------------------------------------------------------- |
-| **LLMock**     | OpenAI, Claude, Gemini, Bedrock, Azure, Vertex AI, Ollama, Cohere | [Providers](https://aimock.copilotkit.dev/docs.html)     |
-| **MCPMock**    | MCP tools, resources, prompts with session management             | [MCP](https://aimock.copilotkit.dev/mcp-mock.html)       |
-| **A2AMock**    | Agent-to-agent protocol with SSE streaming                        | [A2A](https://aimock.copilotkit.dev/a2a-mock.html)       |
-| **VectorMock** | Pinecone, Qdrant, ChromaDB compatible endpoints                   | [Vector](https://aimock.copilotkit.dev/vector-mock.html) |
-| **Services**   | Tavily search, Cohere rerank, OpenAI moderation                   | [Services](https://aimock.copilotkit.dev/services.html)  |
+| Tool           | What it mocks                                                     | Docs                                                |
+| -------------- | ----------------------------------------------------------------- | --------------------------------------------------- |
+| **LLMock**     | OpenAI, Claude, Gemini, Bedrock, Azure, Vertex AI, Ollama, Cohere | [Providers](https://aimock.copilotkit.dev/docs)     |
+| **MCPMock**    | MCP tools, resources, prompts with session management             | [MCP](https://aimock.copilotkit.dev/mcp-mock)       |
+| **A2AMock**    | Agent-to-agent protocol with SSE streaming                        | [A2A](https://aimock.copilotkit.dev/a2a-mock)       |
+| **VectorMock** | Pinecone, Qdrant, ChromaDB compatible endpoints                   | [Vector](https://aimock.copilotkit.dev/vector-mock) |
+| **Services**   | Tavily search, Cohere rerank, OpenAI moderation                   | [Services](https://aimock.copilotkit.dev/services)  |
 
 Run them all on one port with `npx aimock --config aimock.json`, or use the programmatic API to compose exactly what you need.
 
 ## Features
 
-- **[Record & Replay](https://aimock.copilotkit.dev/record-replay.html)** — Proxy real APIs, save as fixtures, replay deterministically forever
-- **[11 LLM Providers](https://aimock.copilotkit.dev/docs.html)** — OpenAI, Claude, Gemini, Bedrock, Azure, Vertex AI, Ollama, Cohere — full streaming support
-- **[MCP / A2A / Vector](https://aimock.copilotkit.dev/mcp-mock.html)** — Mock every protocol your AI agents use
-- **[Chaos Testing](https://aimock.copilotkit.dev/chaos-testing.html)** — 500 errors, malformed JSON, mid-stream disconnects at any probability
-- **[Drift Detection](https://aimock.copilotkit.dev/drift-detection.html)** — Daily CI validation against real APIs
-- **[Streaming Physics](https://aimock.copilotkit.dev/streaming-physics.html)** — Configurable `ttft`, `tps`, and `jitter`
-- **[WebSocket APIs](https://aimock.copilotkit.dev/websocket.html)** — OpenAI Realtime, Responses WS, Gemini Live
-- **[Prometheus Metrics](https://aimock.copilotkit.dev/metrics.html)** — Request counts, latencies, fixture match rates
-- **[Docker + Helm](https://aimock.copilotkit.dev/docker.html)** — Container image and Helm chart for CI/CD
+- **[Record & Replay](https://aimock.copilotkit.dev/record-replay)** — Proxy real APIs, save as fixtures, replay deterministically forever
+- **[11 LLM Providers](https://aimock.copilotkit.dev/docs)** — OpenAI, Claude, Gemini, Bedrock, Azure, Vertex AI, Ollama, Cohere — full streaming support
+- **[MCP / A2A / Vector](https://aimock.copilotkit.dev/mcp-mock)** — Mock every protocol your AI agents use
+- **[Chaos Testing](https://aimock.copilotkit.dev/chaos-testing)** — 500 errors, malformed JSON, mid-stream disconnects at any probability
+- **[Drift Detection](https://aimock.copilotkit.dev/drift-detection)** — Daily CI validation against real APIs
+- **[Streaming Physics](https://aimock.copilotkit.dev/streaming-physics)** — Configurable `ttft`, `tps`, and `jitter`
+- **[WebSocket APIs](https://aimock.copilotkit.dev/websocket)** — OpenAI Realtime, Responses WS, Gemini Live
+- **[Prometheus Metrics](https://aimock.copilotkit.dev/metrics)** — Request counts, latencies, fixture match rates
+- **[Docker + Helm](https://aimock.copilotkit.dev/docker)** — Container image and Helm chart for CI/CD
 - **Zero dependencies** — Everything from Node.js builtins
 
 ## CLI
@@ -69,7 +69,7 @@ docker run -d -p 4010:4010 -v ./fixtures:/fixtures ghcr.io/copilotkit/aimock -f 
 
 ## Switching from other tools?
 
-Step-by-step migration guides: [MSW](https://aimock.copilotkit.dev/migrate-from-msw.html) · [VidaiMock](https://aimock.copilotkit.dev/migrate-from-vidaimock.html) · [mock-llm](https://aimock.copilotkit.dev/migrate-from-mock-llm.html) · [Python mocks](https://aimock.copilotkit.dev/migrate-from-python-mocks.html) · [Mokksy](https://aimock.copilotkit.dev/migrate-from-mokksy.html)
+Step-by-step migration guides: [MSW](https://aimock.copilotkit.dev/migrate-from-msw) · [VidaiMock](https://aimock.copilotkit.dev/migrate-from-vidaimock) · [mock-llm](https://aimock.copilotkit.dev/migrate-from-mock-llm) · [Python mocks](https://aimock.copilotkit.dev/migrate-from-python-mocks) · [Mokksy](https://aimock.copilotkit.dev/migrate-from-mokksy)
 
 ## Documentation
 
