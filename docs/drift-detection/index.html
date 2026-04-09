@@ -536,6 +536,105 @@
             <code>pnpm test:drift</code>.
           </p>
         </div>
+
+        <h2>Automatic Remediation</h2>
+        <p>
+          When drift tests detect a critical mismatch, an automated pipeline fixes, verifies, and
+          releases the correction &mdash; no human intervention required.
+        </p>
+
+        <h3>The Pipeline</h3>
+        <ol>
+          <li>
+            <strong>Detect</strong> &mdash; Daily drift tests run at 6 AM UTC. On failure, a
+            structured <code>drift-report.json</code> is produced with provider, builder file,
+            affected functions, and field-level diffs.
+          </li>
+          <li>
+            <strong>Fix</strong> &mdash; The fix workflow triggers automatically. Claude Code
+            receives the drift report and updates the response builders to match real API shapes,
+            following a red-green-refactor discipline.
+          </li>
+          <li>
+            <strong>Verify</strong> &mdash; The full test suite runs (<code>pnpm test</code>)
+            followed by drift-specific tests (<code>pnpm test:drift</code>). Both must pass.
+          </li>
+          <li>
+            <strong>PR &amp; Merge</strong> &mdash; A PR is created with a patch version bump and
+            changelog entry, then auto-merged once CI passes.
+          </li>
+          <li>
+            <strong>Release</strong> &mdash; On merge to main, the release workflow publishes the
+            new version to npm, creates a GitHub Release, and notifies Slack.
+          </li>
+        </ol>
+        <p>
+          If the auto-fix fails (Claude Code can't resolve the drift or tests don't pass), a GitHub
+          issue is created with the full drift report and Claude Code logs, and a Slack alert fires
+          for manual investigation.
+        </p>
+
+        <h3>Pipeline Diagram</h3>
+
+        <div class="code-block">
+          <div class="code-block-header">
+            Drift-to-release loop <span class="lang-tag">text</span>
+          </div>
+          <pre><code>Daily 6 AM UTC
+    │
+    ▼
+┌──────────────┐     ┌──────────────┐     ┌──────────────┐
+│ Drift Tests  │────▶│  Claude Code  │────▶│   Verify     │
+│ (3-way diff) │     │  (auto-fix)  │     │ (test+drift) │
+└──────────────┘     └──────────────┘     └──────────────┘
+    │ clean              │ fail               │ pass
+    ▼                    ▼                    ▼
+  (done)           GitHub Issue +       PR + auto-merge
+                   Slack alert              │
+                                            ▼
+                                      npm publish +
+                                      Slack alert</code></pre>
+        </div>
+
+        <h3>Workflows</h3>
+        <table class="endpoint-table">
+          <thead>
+            <tr>
+              <th>Workflow</th>
+              <th>File</th>
+              <th>Trigger</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Drift Tests</td>
+              <td><code>test-drift.yml</code></td>
+              <td>Daily cron + manual dispatch</td>
+            </tr>
+            <tr>
+              <td>Fix Drift</td>
+              <td><code>fix-drift.yml</code></td>
+              <td>Auto on drift test failure + manual dispatch</td>
+            </tr>
+            <tr>
+              <td>Release</td>
+              <td><code>publish-release.yml</code></td>
+              <td>Every push to main with unreleased version</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Slack Notifications</h3>
+        <p>The pipeline posts to Slack at each stage:</p>
+        <ul>
+          <li><strong>Drift detected</strong> &mdash; daily test found critical mismatches</li>
+          <li><strong>Drift tests passed</strong> &mdash; no drift, all clean</li>
+          <li><strong>Drift auto-fixed and merged</strong> &mdash; fix succeeded, PR merged</li>
+          <li>
+            <strong>Drift auto-fix failed</strong> &mdash; issue created, needs manual attention
+          </li>
+          <li><strong>Release published</strong> &mdash; new version on npm</li>
+        </ul>
       </main>
       <aside class="page-toc" id="page-toc"></aside>
     </div>
