@@ -1,6 +1,6 @@
 /**
  * Shape extraction, three-way comparison, severity classification, and reporting
- * for drift detection between SDK types, real API responses, and llmock output.
+ * for drift detection between SDK types, real API responses, and aimock output.
  */
 
 // ---------------------------------------------------------------------------
@@ -23,7 +23,7 @@ export interface ShapeDiff {
   issue: string;
   expected: string; // from SDK types
   real: string; // from real API
-  mock: string; // from llmock
+  mock: string; // from aimock
 }
 
 export interface SSEEventShape {
@@ -248,7 +248,7 @@ function triangulateAt(
   // All absent — nothing to compare
   if (!sdk && !real && !mock) return diffs;
 
-  // Field in SDK + real but not mock → llmock drift (critical)
+  // Field in SDK + real but not mock → aimock drift (critical)
   if (sdk && real && !mock) {
     diffs.push({
       path: displayPath,

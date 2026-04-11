@@ -1,7 +1,7 @@
 /**
  * OpenAI Responses API WebSocket drift tests.
  *
- * Three-way comparison: SDK types × real API (WS) × llmock output (WS).
+ * Three-way comparison: SDK types × real API (WS) × aimock output (WS).
  * The Responses WS protocol uses the same event shapes as HTTP SSE.
  */
 

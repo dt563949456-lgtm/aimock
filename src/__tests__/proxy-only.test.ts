@@ -75,14 +75,14 @@ afterEach(async () => {
 // Helpers
 // ---------------------------------------------------------------------------
 
-/** Spin up an upstream llmock + a recording proxy pointed at it. */
+/** Spin up an upstream aimock + a recording proxy pointed at it. */
 async function setupProxyOnly(
   upstreamFixtures: Fixture[],
   proxyOnly: boolean,
 ): Promise<{ upstreamUrl: string; recorderUrl: string; fixturePath: string }> {
   upstream = await createServer(upstreamFixtures, { port: 0 });
 
-  tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-proxy-only-"));
+  tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-proxy-only-"));
 
   recorder = await createServer([], {
     port: 0,
@@ -194,7 +194,7 @@ describe("proxy-only mode", () => {
     // Use a counting upstream to verify both requests are proxied
     const countingUpstream = await createCountingUpstream("counted response");
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-proxy-only-cache-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-proxy-only-cache-"));
 
     recorder = await createServer([], {
       port: 0,
@@ -229,7 +229,7 @@ describe("proxy-only mode", () => {
     // Use a counting upstream to verify only the first request is proxied
     const countingUpstream = await createCountingUpstream("cached response");
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-cache-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-cache-"));
 
     recorder = await createServer([], {
       port: 0,
@@ -290,7 +290,7 @@ describe("proxy-only mode", () => {
       { port: 0 },
     );
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-proxy-only-matched-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-proxy-only-matched-"));
 
     // Recorder has its own fixture that should match BEFORE proxying
     const localFixture: Fixture = {
@@ -326,7 +326,7 @@ describe("proxy-only mode", () => {
     // Set up recorder with proxy-only mode but no anthropic provider configured
     upstream = await createServer([], { port: 0 });
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-proxy-only-noprovider-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-proxy-only-noprovider-"));
 
     recorder = await createServer([], {
       port: 0,
@@ -352,7 +352,7 @@ describe("proxy-only mode", () => {
   it("returns 404 in non-strict mode when provider is not configured", async () => {
     upstream = await createServer([], { port: 0 });
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-proxy-only-404-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-proxy-only-404-"));
 
     recorder = await createServer([], {
       port: 0,

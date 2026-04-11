@@ -1,7 +1,7 @@
 /**
  * Anthropic Claude Messages API drift tests.
  *
- * Three-way comparison: SDK types × real API × llmock output.
+ * Three-way comparison: SDK types × real API × aimock output.
  */
 
 import { describe, it, expect, beforeAll, afterAll } from "vitest";

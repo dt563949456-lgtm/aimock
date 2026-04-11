@@ -389,7 +389,7 @@ describe("recorder streaming collapse", () => {
       },
     ]);
 
-    // Send request with stream: true — upstream llmock will return SSE
+    // Send request with stream: true — upstream aimock will return SSE
     const resp = await post(`${recorderUrl}/v1/chat/completions`, {
       model: "gpt-4",
       messages: [{ role: "user", content: "What is the capital of France?" }],
@@ -488,7 +488,7 @@ describe("recorder multi-provider routing", () => {
       { port: 0 },
     );
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
 
     recorder = await createServer([], {
       port: 0,
@@ -506,7 +506,7 @@ describe("recorder multi-provider routing", () => {
 
     expect(resp.status).toBe(200);
     // Anthropic handler translates to/from Claude format; the upstream
-    // is another llmock so it returns OpenAI format which gets proxied raw
+    // is another aimock so it returns OpenAI format which gets proxied raw
     const body = JSON.parse(resp.body);
     // The proxied response should contain content
     expect(body).toBeDefined();
@@ -573,7 +573,7 @@ describe("recorder strict mode", () => {
     // Need to create a new recorder with both record + strict
     await new Promise<void>((resolve) => recorder!.server.close(() => resolve()));
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
     recorder = await createServer([], {
       port: 0,
       strict: true,
@@ -628,7 +628,7 @@ describe("LLMock enableRecording / disableRecording", () => {
       { port: 0 },
     );
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
 
     mock = new LLMock();
     const url = await mock.start();
@@ -703,7 +703,7 @@ describe("recorder multi-provider recording", () => {
       ),
     );
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
     recorder = await createServer([], {
       port: 0,
       record: { providers: { gemini: geminiUpstream.url }, fixturePath: tmpDir },
@@ -735,7 +735,7 @@ describe("recorder multi-provider recording", () => {
       ),
     );
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
     recorder = await createServer([], {
       port: 0,
       record: { providers: { ollama: ollamaUpstream.url }, fixturePath: tmpDir },
@@ -767,7 +767,7 @@ describe("recorder multi-provider recording", () => {
       ),
     );
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
     recorder = await createServer([], {
       port: 0,
       record: { providers: { cohere: cohereUpstream.url }, fixturePath: tmpDir },
@@ -799,7 +799,7 @@ describe("recorder multi-provider recording", () => {
       ),
     );
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
     recorder = await createServer([], {
       port: 0,
       record: { providers: { bedrock: bedrockUpstream.url }, fixturePath: tmpDir },
@@ -832,7 +832,7 @@ describe("recorder multi-provider recording", () => {
       ),
     );
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
     recorder = await createServer([], {
       port: 0,
       record: { providers: { vertexai: vertexUpstream.url }, fixturePath: tmpDir },
@@ -864,7 +864,7 @@ describe("recorder multi-provider recording", () => {
       ),
     );
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
     recorder = await createServer([], {
       port: 0,
       record: { providers: { anthropic: anthropicUpstream.url }, fixturePath: tmpDir },
@@ -897,7 +897,7 @@ describe("recorder multi-provider recording", () => {
       ),
     );
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
     recorder = await createServer([], {
       port: 0,
       record: {
@@ -1124,7 +1124,7 @@ describe("recorder edge cases", () => {
       { port: 0 },
     );
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
     recorder = await createServer([], {
       port: 0,
       record: { providers: { openai: upstream.url }, fixturePath: tmpDir },
@@ -1275,7 +1275,7 @@ describe("recorder edge cases", () => {
     );
 
     // Use a nested path that doesn't exist
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
     const nestedPath = path.join(tmpDir, "nested", "deep", "fixtures");
 
     recorder = await createServer([], {
@@ -1343,7 +1343,7 @@ describe("recorder edge cases", () => {
     await new Promise<void>((resolve) => upstreamServer.listen(0, "127.0.0.1", resolve));
     const upAddr = upstreamServer.address() as { port: number };
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
     recorder = await createServer([], {
       port: 0,
       record: { providers: { openai: `http://127.0.0.1:${upAddr.port}` }, fixturePath: tmpDir },
@@ -1375,7 +1375,7 @@ describe("recorder edge cases", () => {
     const emptyAddr = emptyServer.address() as { port: number };
     const emptyUrl = `http://127.0.0.1:${emptyAddr.port}`;
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
     recorder = await createServer([], {
       port: 0,
       record: { providers: { openai: emptyUrl }, fixturePath: tmpDir },
@@ -1424,7 +1424,7 @@ describe("recorder edge cases", () => {
     const ollamaAddr = ollamaRaw.address() as { port: number };
     const ollamaUrl = `http://127.0.0.1:${ollamaAddr.port}`;
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
     recorder = await createServer([], {
       port: 0,
       record: { providers: { ollama: ollamaUrl }, fixturePath: tmpDir },
@@ -1478,7 +1478,7 @@ describe("recorder strict mode thorough", () => {
       { port: 0 },
     );
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
     recorder = await createServer([], {
       port: 0,
       strict: true,
@@ -1530,7 +1530,7 @@ describe("LLMock enableRecording / disableRecording lifecycle", () => {
       { port: 0 },
     );
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
     mock = new LLMock();
     const url = await mock.start();
 
@@ -1570,7 +1570,7 @@ describe("LLMock enableRecording / disableRecording lifecycle", () => {
       { port: 0 },
     );
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
     mock = new LLMock();
     const url = await mock.start();
 
@@ -1615,7 +1615,7 @@ describe("recorder auth header handling", () => {
       { port: 0 },
     );
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
     recorder = await createServer([], {
       port: 0,
       record: { providers: { anthropic: anthropicUpstream.url }, fixturePath: tmpDir },
@@ -1691,7 +1691,7 @@ describe("recorder auth header handling", () => {
     const echoAddr = echoServer.address() as { port: number };
     const echoUrl = `http://127.0.0.1:${echoAddr.port}`;
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
     recorder = await createServer([], {
       port: 0,
       record: { providers: { openai: echoUrl }, fixturePath: tmpDir },
@@ -1725,7 +1725,7 @@ describe("recorder auth header handling", () => {
 
 describe("recorder upstream connection failure", () => {
   it("returns 502 when upstream is unreachable", async () => {
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
     recorder = await createServer([], {
       port: 0,
       record: {
@@ -1757,7 +1757,7 @@ describe("recorder filesystem write failure", () => {
     );
 
     // Use a path that cannot be a directory (a regular file)
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
     const blockedPath = path.join(tmpDir, "blocked");
     fs.writeFileSync(blockedPath, "i am a file not a directory");
 
@@ -1819,7 +1819,7 @@ describe("recorder buildFixtureResponse non-OpenAI formats", () => {
       stop_reason: "end_turn",
     });
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
     recorder = await createServer([], {
       port: 0,
       record: { providers: { anthropic: upstreamUrl }, fixturePath: tmpDir },
@@ -1853,7 +1853,7 @@ describe("recorder buildFixtureResponse non-OpenAI formats", () => {
       ],
     });
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
     recorder = await createServer([], {
       port: 0,
       record: { providers: { gemini: upstreamUrl }, fixturePath: tmpDir },
@@ -1882,7 +1882,7 @@ describe("recorder buildFixtureResponse non-OpenAI formats", () => {
       done: true,
     });
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
     recorder = await createServer([], {
       port: 0,
       record: { providers: { ollama: upstreamUrl }, fixturePath: tmpDir },
@@ -1943,7 +1943,7 @@ describe("recorder content + toolCalls coexistence", () => {
     const rawAddr = rawServer.address() as { port: number };
     const rawUrl = `http://127.0.0.1:${rawAddr.port}`;
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
     recorder = await createServer([], {
       port: 0,
       record: { providers: { openai: rawUrl }, fixturePath: tmpDir },
@@ -2001,7 +2001,7 @@ describe("recorder non-OpenAI streaming", () => {
     const rawAddr = rawServer.address() as { port: number };
     const rawUrl = `http://127.0.0.1:${rawAddr.port}`;
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
     recorder = await createServer([], {
       port: 0,
       record: { providers: { anthropic: rawUrl }, fixturePath: tmpDir },
@@ -2046,7 +2046,7 @@ describe("recorder streaming collapse: Gemini SSE", () => {
       { port: 0 },
     );
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
 
     recorder = await createServer([], {
       port: 0,
@@ -2089,7 +2089,7 @@ describe("recorder streaming collapse: Cohere SSE", () => {
       { port: 0 },
     );
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
 
     recorder = await createServer([], {
       port: 0,
@@ -2131,7 +2131,7 @@ describe("recorder streaming collapse: Ollama NDJSON", () => {
       { port: 0 },
     );
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
 
     recorder = await createServer([], {
       port: 0,
@@ -2206,7 +2206,7 @@ describe("buildFixtureResponse format detection", () => {
       stop_reason: "tool_use",
     });
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
     recorder = await createServer([], {
       port: 0,
       record: { providers: { anthropic: upstreamUrl }, fixturePath: tmpDir },
@@ -2262,7 +2262,7 @@ describe("buildFixtureResponse format detection", () => {
       ],
     });
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
     recorder = await createServer([], {
       port: 0,
       record: { providers: { gemini: upstreamUrl }, fixturePath: tmpDir },
@@ -2303,7 +2303,7 @@ describe("buildFixtureResponse format detection", () => {
       status: "ok",
     });
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
     recorder = await createServer([], {
       port: 0,
       record: { providers: { openai: upstreamUrl }, fixturePath: tmpDir },
@@ -2341,7 +2341,7 @@ describe("buildFixtureResponse format detection", () => {
       embedding: [0.1, 0.2, 0.3],
     });
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
     recorder = await createServer([], {
       port: 0,
       record: { providers: { openai: upstreamUrl }, fixturePath: tmpDir },
@@ -2378,7 +2378,7 @@ describe("buildFixtureResponse format detection", () => {
       usage: { prompt_tokens: 5, total_tokens: 5 },
     });
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
     recorder = await createServer([], {
       port: 0,
       record: { providers: { openai: upstreamUrl }, fixturePath: tmpDir },
@@ -2417,7 +2417,7 @@ describe("buildFixtureResponse format detection", () => {
       usage: { prompt_tokens: 5, total_tokens: 5 },
     });
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
     recorder = await createServer([], {
       port: 0,
       record: { providers: { openai: upstreamUrl }, fixturePath: tmpDir },
@@ -2455,7 +2455,7 @@ describe("buildFixtureResponse format detection", () => {
       usage: { prompt_tokens: 5, total_tokens: 5 },
     });
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
     recorder = await createServer([], {
       port: 0,
       record: { providers: { openai: upstreamUrl }, fixturePath: tmpDir },
@@ -2494,7 +2494,7 @@ describe("buildFixtureResponse format detection", () => {
       usage: { prompt_tokens: 5, total_tokens: 5 },
     });
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
     recorder = await createServer([], {
       port: 0,
       record: { providers: { openai: upstreamUrl }, fixturePath: tmpDir },
@@ -2535,7 +2535,7 @@ describe("buildFixtureResponse format detection", () => {
       429,
     );
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
     recorder = await createServer([], {
       port: 0,
       record: { providers: { openai: upstreamUrl }, fixturePath: tmpDir },
@@ -2608,7 +2608,7 @@ describe("recorder Bedrock EventStream binary", () => {
     const rawAddr = rawServer.address() as { port: number };
     const rawUrl = `http://127.0.0.1:${rawAddr.port}`;
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
     recorder = await createServer([], {
       port: 0,
       record: { providers: { bedrock: rawUrl }, fixturePath: tmpDir },
@@ -2668,7 +2668,7 @@ describe("recorder streaming edge cases", () => {
     const rawAddr = rawServer.address() as { port: number };
     const rawUrl = `http://127.0.0.1:${rawAddr.port}`;
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
     recorder = await createServer([], {
       port: 0,
       record: { providers: { openai: rawUrl }, fixturePath: tmpDir },
@@ -2731,7 +2731,7 @@ describe("recorder streaming edge cases", () => {
     const rawAddr = rawServer.address() as { port: number };
     const rawUrl = `http://127.0.0.1:${rawAddr.port}`;
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
     recorder = await createServer([], {
       port: 0,
       record: { providers: { openai: rawUrl }, fixturePath: tmpDir },
@@ -2802,7 +2802,7 @@ describe("buildFixtureResponse additional format variants", () => {
       stopReason: "end_turn",
     });
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
     recorder = await createServer([], {
       port: 0,
       record: { providers: { openai: upstreamUrl }, fixturePath: tmpDir },
@@ -2843,7 +2843,7 @@ describe("buildFixtureResponse additional format variants", () => {
       stopReason: "tool_use",
     });
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
     recorder = await createServer([], {
       port: 0,
       record: { providers: { openai: upstreamUrl }, fixturePath: tmpDir },
@@ -2885,7 +2885,7 @@ describe("buildFixtureResponse additional format variants", () => {
       role: "assistant",
     });
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
     recorder = await createServer([], {
       port: 0,
       record: { providers: { anthropic: upstreamUrl }, fixturePath: tmpDir },
@@ -2933,7 +2933,7 @@ describe("buildFixtureResponse additional format variants", () => {
       ],
     });
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
     recorder = await createServer([], {
       port: 0,
       record: { providers: { gemini: upstreamUrl }, fixturePath: tmpDir },
@@ -2970,7 +2970,7 @@ describe("buildFixtureResponse additional format variants", () => {
       done: true,
     });
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
     recorder = await createServer([], {
       port: 0,
       record: { providers: { ollama: upstreamUrl }, fixturePath: tmpDir },
@@ -3012,7 +3012,7 @@ describe("buildFixtureResponse additional format variants", () => {
       done: true,
     });
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
     recorder = await createServer([], {
       port: 0,
       record: { providers: { ollama: upstreamUrl }, fixturePath: tmpDir },
@@ -3048,7 +3048,7 @@ describe("buildFixtureResponse additional format variants", () => {
 
 describe("recorder invalid upstream URL", () => {
   it("returns 502 for invalid upstream URL format", async () => {
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
     recorder = await createServer([], {
       port: 0,
       logLevel: "silent",
@@ -3091,9 +3091,9 @@ async function setupUpstreamAndRecorder(
   upstream = await createServer(upstreamFixtures, { port: 0 });
 
   // Create temp directory for recorded fixtures
-  tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+  tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
 
-  // Create recording llmock (no fixtures — everything proxies)
+  // Create recording aimock (no fixtures — everything proxies)
   const providers: Record<string, string> = {};
   providers[providerKey] = upstream.url;
 
@@ -3138,7 +3138,7 @@ describe("makeUpstreamRequest body timeout", () => {
 
     const setTimeoutSpy = vi.spyOn(http.IncomingMessage.prototype, "setTimeout");
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-timeout-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-timeout-"));
     const record: RecordConfig = {
       providers: { openai: `http://127.0.0.1:${port}` },
       fixturePath: tmpDir,
@@ -3226,7 +3226,7 @@ describe("recorder binary EventStream relay integrity", () => {
     const rawAddr = rawServer!.address() as { port: number };
     const rawUrl = `http://127.0.0.1:${rawAddr.port}`;
 
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "llmock-record-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aimock-record-"));
     recorder = await createServer([], {
       port: 0,
       record: { providers: { bedrock: rawUrl }, fixturePath: tmpDir },

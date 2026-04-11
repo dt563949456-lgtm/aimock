@@ -172,7 +172,7 @@ const DOCS_PATH = resolve(import.meta.dirname ?? __dirname, "../docs/index.html"
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN ?? "";
 const HEADERS: Record<string, string> = {
   Accept: "application/vnd.github.v3+json",
-  "User-Agent": "llmock-competitive-matrix-updater",
+  "User-Agent": "aimock-competitive-matrix-updater",
   ...(GITHUB_TOKEN ? { Authorization: `Bearer ${GITHUB_TOKEN}` } : {}),
 };
 
@@ -403,7 +403,7 @@ function parseCurrentMatrix(html: string): {
   while ((m = thRegex.exec(tableHtml)) !== null) {
     headers.push(m[1].trim());
   }
-  // headers[0] = "llmock", headers[1] = "MSW", headers[2..] = competitors
+  // headers[0] = "aimock", headers[1] = "MSW", headers[2..] = competitors
 
   // Extract rows
   const rows = new Map<string, Map<string, string>>();
@@ -422,7 +422,7 @@ function parseCurrentMatrix(html: string): {
 
     const rowLabel = tds[0];
     const rowMap = new Map<string, string>();
-    // tds[1] = llmock, tds[2] = MSW, tds[3..5] = competitors
+    // tds[1] = aimock, tds[2] = MSW, tds[3..5] = competitors
     for (let i = 1; i < tds.length && i - 1 < headers.length; i++) {
       rowMap.set(headers[i - 1], tds[i]);
     }
@@ -433,7 +433,7 @@ function parseCurrentMatrix(html: string): {
 }
 
 /**
- * Updates only competitor cells (not llmock or MSW) where:
+ * Updates only competitor cells (not aimock or MSW) where:
  * - The current value indicates "No" (class="no">No</td>)
  * - The feature was detected in the competitor's README
  *
@@ -495,9 +495,9 @@ function applyChanges(html: string, changes: DetectedChange[]): string {
   while ((m = thRegex.exec(theadMatch[1])) !== null) {
     headers.push(m[1].trim());
   }
-  // Column indices: "Capability" = 0 (no header link), then llmock=1, MSW=2,
+  // Column indices: "Capability" = 0 (no header link), then aimock=1, MSW=2,
   // VidaiMock=3, mock-llm=4, piyook/llm-mock=5
-  // In the <td> array: index 0 = capability, 1 = llmock, 2 = MSW, 3+ = competitors
+  // In the <td> array: index 0 = capability, 1 = aimock, 2 = MSW, 3+ = competitors
   const compColumnIndex = (name: string): number => {
     const idx = headers.indexOf(name);
     return idx === -1 ? -1 : idx + 1; // +1 because first <td> is the row label

@@ -73,7 +73,7 @@ function writeSummary(summaryPath: string, changes: DetectedChange[]): void {
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
 function tmpPath(suffix: string): string {
-  return join(tmpdir(), `llmock-cm-test-${suffix}-${Date.now()}.md`);
+  return join(tmpdir(), `aimock-cm-test-${suffix}-${Date.now()}.md`);
 }
 
 const tempFiles: string[] = [];

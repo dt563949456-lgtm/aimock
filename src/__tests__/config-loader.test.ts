@@ -772,7 +772,7 @@ describe("startFromConfig", () => {
     expect(card.name).toBe("no-events-agent");
   });
 
-  it("with record config, llmock receives record settings", async () => {
+  it("with record config, aimock receives record settings", async () => {
     const config: AimockConfig = {
       llm: {
         record: {

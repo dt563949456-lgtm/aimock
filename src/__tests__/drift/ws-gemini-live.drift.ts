@@ -1,7 +1,7 @@
 /**
  * Gemini Live BidiGenerateContent WebSocket drift tests.
  *
- * Three-way comparison: SDK types × real API (WS) × llmock output (WS).
+ * Three-way comparison: SDK types × real API (WS) × aimock output (WS).
  *
  * Currently, the Gemini Live API only supports native-audio models
  * (those with "native-audio" in the name) which cannot return TEXT responses.

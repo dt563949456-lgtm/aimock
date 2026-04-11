@@ -1,5 +1,5 @@
 /**
- * Model deprecation checks — verify that models referenced in llmock's
+ * Model deprecation checks — verify that models referenced in aimock's
  * tests, docs, and examples still exist at each provider.
  */
 
@@ -43,7 +43,7 @@ const sourceFiles = [
 // ---------------------------------------------------------------------------
 
 describe.skipIf(!process.env.OPENAI_API_KEY)("OpenAI model availability", () => {
-  it("models used in llmock tests are still available", async () => {
+  it("models used in aimock tests are still available", async () => {
     const models = await listOpenAIModels(process.env.OPENAI_API_KEY!);
     const referenced = scrapeModels(/\b(gpt-4o(?:-mini)?|gpt-4|gpt-3\.5-turbo)\b/g, sourceFiles);
 
@@ -62,7 +62,7 @@ describe.skipIf(!process.env.OPENAI_API_KEY)("OpenAI model availability", () => 
 // ---------------------------------------------------------------------------
 
 describe.skipIf(!process.env.ANTHROPIC_API_KEY)("Anthropic model availability", () => {
-  it("models used in llmock tests are still available", async () => {
+  it("models used in aimock tests are still available", async () => {
     const models = await listAnthropicModels(process.env.ANTHROPIC_API_KEY!);
     const referenced = scrapeModels(
       /\b(claude-3(?:\.\d+)?-(?:opus|sonnet|haiku)(?:-\d{8})?)\b/g,
@@ -83,7 +83,7 @@ describe.skipIf(!process.env.ANTHROPIC_API_KEY)("Anthropic model availability", 
 // ---------------------------------------------------------------------------
 
 describe.skipIf(!process.env.GOOGLE_API_KEY)("Gemini model availability", () => {
-  it("models used in llmock tests are still available", async () => {
+  it("models used in aimock tests are still available", async () => {
     const models = await listGeminiModels(process.env.GOOGLE_API_KEY!);
     const referenced = scrapeModels(/\b(gemini-(?:[\w.-]+))\b/g, sourceFiles);
 

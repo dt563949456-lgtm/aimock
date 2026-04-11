@@ -1,7 +1,7 @@
 /**
  * OpenAI Realtime API WebSocket drift tests.
  *
- * Three-way comparison: SDK types x real API (WS) x llmock output (WS).
+ * Three-way comparison: SDK types x real API (WS) x aimock output (WS).
  */
 
 import { describe, it, expect, beforeAll, afterAll } from "vitest";

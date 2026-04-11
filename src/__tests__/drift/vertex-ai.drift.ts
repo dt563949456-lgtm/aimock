@@ -1,7 +1,7 @@
 /**
  * Vertex AI / Gemini drift tests.
  *
- * Verifies that llmock's Vertex AI routing produces response shapes
+ * Verifies that aimock's Vertex AI routing produces response shapes
  * consistent with the Gemini generateContent endpoint.
  *
  * Requires: GOOGLE_APPLICATION_CREDENTIALS or (VERTEX_AI_PROJECT + VERTEX_AI_LOCATION)
@@ -71,7 +71,7 @@ describe.skipIf(!HAS_CREDENTIALS)("Vertex AI drift", () => {
   it("generateContent mock shape matches Gemini format", async () => {
     const sdkShape = geminiGenerateContentShape();
 
-    // Vertex AI routing in llmock follows the path pattern:
+    // Vertex AI routing in aimock follows the path pattern:
     // /v1/projects/{project}/locations/{location}/publishers/google/models/{model}:generateContent
     const mockRes = await httpPost(
       `${instance.url}/v1/projects/test-project/locations/us-central1/publishers/google/models/gemini-2.5-flash:generateContent`,

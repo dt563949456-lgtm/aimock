@@ -46,7 +46,7 @@ function chatBody(userMessage: string, stream = true) {
 }
 
 function makeTmpDir(): string {
-  return mkdtempSync(join(tmpdir(), "llmock-test-"));
+  return mkdtempSync(join(tmpdir(), "aimock-test-"));
 }
 
 // ---- Tests ----

@@ -317,7 +317,7 @@ function makeUpstreamRequest(
 
 /**
  * Detect the response format from the parsed upstream JSON and convert
- * it into an llmock FixtureResponse.
+ * it into an aimock FixtureResponse.
  */
 function buildFixtureResponse(
   parsed: unknown,

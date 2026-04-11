@@ -1,7 +1,7 @@
 /**
  * Ollama drift tests.
  *
- * Compares llmock's Ollama endpoint output shapes against a real local
+ * Compares aimock's Ollama endpoint output shapes against a real local
  * Ollama instance. Skips automatically if Ollama is not reachable.
  *
  * Requires: local Ollama running at http://localhost:11434

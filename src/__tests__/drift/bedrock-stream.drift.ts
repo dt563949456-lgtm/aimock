@@ -1,7 +1,7 @@
 /**
  * AWS Bedrock drift tests.
  *
- * Three-way comparison: SDK types x real API x llmock output.
+ * Three-way comparison: SDK types x real API x aimock output.
  * Covers invoke-with-response-stream and converse endpoints.
  */
 

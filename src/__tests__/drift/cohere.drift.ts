@@ -1,7 +1,7 @@
 /**
  * Cohere drift tests.
  *
- * Three-way comparison: expected shape x real API x llmock output.
+ * Three-way comparison: expected shape x real API x aimock output.
  * Covers /v2/chat non-streaming and streaming endpoints.
  *
  * Requires: COHERE_API_KEY

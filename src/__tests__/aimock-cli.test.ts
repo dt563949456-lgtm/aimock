@@ -456,7 +456,7 @@ describe("runAimockCli: onReady and shutdown", () => {
     });
   });
 
-  it("shutdown calls llmock.stop()", async () => {
+  it("shutdown calls aimock.stop()", async () => {
     const mockStop = vi.fn().mockResolvedValue(undefined);
     const startFromConfigFn = vi.fn().mockResolvedValue({
       llmock: { stop: mockStop },
@@ -496,7 +496,7 @@ describe("runAimockCli: onReady and shutdown", () => {
     });
   });
 
-  it("shutdown logs error and exits 1 when llmock.stop() rejects", async () => {
+  it("shutdown logs error and exits 1 when aimock.stop() rejects", async () => {
     const mockStop = vi.fn().mockRejectedValue(new Error("close ENOTCONN"));
     const startFromConfigFn = vi.fn().mockResolvedValue({
       llmock: { stop: mockStop },

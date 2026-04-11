@@ -10,7 +10,7 @@ import { AGUIMock } from "./agui-mock.js";
 import type { ChaosConfig, RecordConfig } from "./types.js";
 
 const HELP = `
-Usage: llmock [options]
+Usage: aimock [options]
 
 Options:
   -p, --port <number>       Port to listen on (default: 4010)

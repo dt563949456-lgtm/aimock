@@ -1,19 +1,19 @@
 # Live API Drift Detection
 
-llmock produces responses shaped like real LLM APIs. Providers change their APIs over time. **Drift** means the mock no longer matches reality — your tests pass against llmock but break against the real API.
+aimock produces responses shaped like real LLM APIs. Providers change their APIs over time. **Drift** means the mock no longer matches reality — your tests pass against aimock but break against the real API.
 
 ## Three-Layer Approach
 
 Drift detection compares three independent sources to triangulate the cause of any mismatch:
 
-| SDK types = Real API? | Real API = llmock? | Diagnosis                                                            |
+| SDK types = Real API? | Real API = aimock? | Diagnosis                                                            |
 | --------------------- | ------------------ | -------------------------------------------------------------------- |
-| Yes                   | No                 | **llmock drift** — response builders need updating                   |
+| Yes                   | No                 | **aimock drift** — response builders need updating                   |
 | No                    | No                 | **Provider changed before SDK update** — flag, wait for SDK catch-up |
 | Yes                   | Yes                | **No drift** — all clear                                             |
 | No                    | Yes                | **SDK drift** — provider deprecated something SDK still references   |
 
-Two-way comparison (mock vs real) can't distinguish between "we need to fix llmock" and "the SDK hasn't caught up yet." Three-way comparison can.
+Two-way comparison (mock vs real) can't distinguish between "we need to fix aimock" and "the SDK hasn't caught up yet." Three-way comparison can.
 
 ## Running Drift Tests
 
@@ -40,9 +40,9 @@ Each provider's tests skip independently if its key is not set. You can run drif
 
 ### Severity levels
 
-- **critical** — Test fails. llmock produces a different shape than the real API for a field that both the SDK and real API agree on. This means llmock needs an update.
-- **warning** — Test passes (unless `STRICT_DRIFT=1`). The real API has a field that neither the SDK nor llmock knows about, or the SDK and real API disagree. Usually means a provider added something new.
-- **info** — Always passes. Known intentional differences (usage fields are always zero, optional fields llmock omits, etc.).
+- **critical** — Test fails. aimock produces a different shape than the real API for a field that both the SDK and real API agree on. This means aimock needs an update.
+- **warning** — Test passes (unless `STRICT_DRIFT=1`). The real API has a field that neither the SDK nor aimock knows about, or the SDK and real API disagree. Usually means a provider added something new.
+- **info** — Always passes. Known intentional differences (usage fields are always zero, optional fields aimock omits, etc.).
 
 ### Example report output
 
@@ -86,7 +86,7 @@ When a `critical` drift is detected:
 
 ## Model Deprecation
 
-The `models.drift.ts` test scrapes model names referenced in llmock's test files, README, and fixtures, then checks each provider's model listing API to verify they still exist.
+The `models.drift.ts` test scrapes model names referenced in aimock's test files, README, and fixtures, then checks each provider's model listing API to verify they still exist.
 
 When a model is deprecated:
 
@@ -106,7 +106,7 @@ When a model is deprecated:
 
 ## WebSocket Drift Coverage
 
-In addition to the 19 existing drift tests (16 HTTP response-shape + 3 model deprecation), WebSocket drift tests cover llmock's WS protocols (4 verified + 2 canary = 6 WS tests):
+In addition to the 19 existing drift tests (16 HTTP response-shape + 3 model deprecation), WebSocket drift tests cover aimock's WS protocols (4 verified + 2 canary = 6 WS tests):
 
 | Protocol            | Text | Tool Call | Real Endpoint                                                       | Status     |
 | ------------------- | ---- | --------- | ------------------------------------------------------------------- | ---------- |
@@ -118,13 +118,13 @@ In addition to the 19 existing drift tests (16 HTTP response-shape + 3 model dep
 
 **Auth**: Uses the same `OPENAI_API_KEY` and `GOOGLE_API_KEY` environment variables as HTTP tests. No new secrets needed.
 
-**How it works**: A TLS WebSocket client (`ws-providers.ts`) connects to real provider endpoints using `node:tls` with RFC 6455 framing. Each protocol function handles the setup sequence (e.g., Realtime session negotiation, Gemini Live setup/setupComplete) and collects messages until a terminal event. The mock side uses the existing `ws-test-client.ts` plaintext client against the local llmock server.
+**How it works**: A TLS WebSocket client (`ws-providers.ts`) connects to real provider endpoints using `node:tls` with RFC 6455 framing. Each protocol function handles the setup sequence (e.g., Realtime session negotiation, Gemini Live setup/setupComplete) and collects messages until a terminal event. The mock side uses the existing `ws-test-client.ts` plaintext client against the local aimock server.
 
 ### Gemini Live: unverified
 
-llmock's Gemini Live handler implements the text-based `BidiGenerateContent` protocol as documented in Google's [Live API reference](https://ai.google.dev/api/live) — `setup`/`setupComplete` handshake, `clientContent` with turns, `serverContent` with `modelTurn.parts[].text`, and `toolCall` responses. The protocol format is correct per the docs.
+aimock's Gemini Live handler implements the text-based `BidiGenerateContent` protocol as documented in Google's [Live API reference](https://ai.google.dev/api/live) — `setup`/`setupComplete` handshake, `clientContent` with turns, `serverContent` with `modelTurn.parts[].text`, and `toolCall` responses. The protocol format is correct per the docs.
 
-However, as of March 2026, the only models that support `bidiGenerateContent` are native-audio models (`gemini-2.5-flash-native-audio-*`), which reject text-only requests. No text-capable model exists for this endpoint yet, so we cannot triangulate llmock's output against a real API response.
+However, as of March 2026, the only models that support `bidiGenerateContent` are native-audio models (`gemini-2.5-flash-native-audio-*`), which reject text-only requests. No text-capable model exists for this endpoint yet, so we cannot triangulate aimock's output against a real API response.
 
 A canary test (`ws-gemini-live.drift.ts`) queries the Gemini model listing API on each drift run and checks for a non-audio model that supports `bidiGenerateContent`. When Google ships one, the canary will flag it and the full drift tests can be enabled.
 

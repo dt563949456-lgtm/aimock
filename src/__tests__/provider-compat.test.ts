@@ -31,7 +31,7 @@ async function httpGet(url: string): Promise<{ status: number; body: string }> {
 const CATCH_ALL_FIXTURES: Fixture[] = [
   {
     match: { userMessage: "hello" },
-    response: { content: "Hello from llmock!" },
+    response: { content: "Hello from aimock!" },
   },
 ];
 
@@ -66,7 +66,7 @@ describe("Mistral compatibility", () => {
     expect(status).toBe(200);
     const parsed = JSON.parse(body);
     expect(parsed.choices).toBeDefined();
-    expect(parsed.choices[0].message.content).toBe("Hello from llmock!");
+    expect(parsed.choices[0].message.content).toBe("Hello from aimock!");
     expect(parsed.object).toBe("chat.completion");
   });
 });
@@ -138,7 +138,7 @@ describe("Groq compatibility", () => {
     expect(status).toBe(200);
     const parsed = JSON.parse(body);
     expect(parsed.choices).toBeDefined();
-    expect(parsed.choices[0].message.content).toBe("Hello from llmock!");
+    expect(parsed.choices[0].message.content).toBe("Hello from aimock!");
     expect(parsed.object).toBe("chat.completion");
   });
 
@@ -182,7 +182,7 @@ describe("Ollama compatibility", () => {
     expect(status).toBe(200);
     const parsed = JSON.parse(body);
     expect(parsed.choices).toBeDefined();
-    expect(parsed.choices[0].message.content).toBe("Hello from llmock!");
+    expect(parsed.choices[0].message.content).toBe("Hello from aimock!");
     expect(parsed.object).toBe("chat.completion");
   });
 });
@@ -205,7 +205,7 @@ describe("Together AI compatibility", () => {
     expect(status).toBe(200);
     const parsed = JSON.parse(body);
     expect(parsed.choices).toBeDefined();
-    expect(parsed.choices[0].message.content).toBe("Hello from llmock!");
+    expect(parsed.choices[0].message.content).toBe("Hello from aimock!");
   });
 });
 
@@ -223,6 +223,6 @@ describe("vLLM compatibility", () => {
     expect(status).toBe(200);
     const parsed = JSON.parse(body);
     expect(parsed.choices).toBeDefined();
-    expect(parsed.choices[0].message.content).toBe("Hello from llmock!");
+    expect(parsed.choices[0].message.content).toBe("Hello from aimock!");
   });
 });

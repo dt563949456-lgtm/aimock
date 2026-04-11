@@ -1,6 +1,6 @@
 # aimock-pytest
 
-pytest fixtures for [aimock](https://github.com/CopilotKit/llmock) — mock LLM APIs, MCP tools, A2A agents, vector databases, and more.
+pytest fixtures for [aimock](https://github.com/CopilotKit/aimock) — mock LLM APIs, MCP tools, A2A agents, vector databases, and more.
 
 ## Install
 
