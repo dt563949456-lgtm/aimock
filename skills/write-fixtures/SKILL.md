@@ -70,6 +70,7 @@ The embedding vector is returned for each input in the request. If no embedding 
 
 ### Image
 
+<!-- prettier-ignore -->
 ```typescript
 // Single image
 {
