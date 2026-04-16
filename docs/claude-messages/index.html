@@ -84,7 +84,7 @@
 <span class="kw">const</span> <span class="op">instance</span> = <span class="kw">await</span> <span class="fn">createServer</span>([<span class="op">textFixture</span>]);
 
 <span class="kw">const</span> <span class="op">res</span> = <span class="kw">await</span> <span class="fn">post</span>(<span class="str">`${instance.url}/v1/messages`</span>, {
-  <span class="prop">model</span>: <span class="str">"claude-sonnet-4-20250514"</span>,
+  <span class="prop">model</span>: <span class="str">"claude-sonnet-4-6"</span>,
   <span class="prop">max_tokens</span>: <span class="num">1024</span>,
   <span class="prop">messages</span>: [{ <span class="prop">role</span>: <span class="str">"user"</span>, <span class="prop">content</span>: <span class="str">"hello"</span> }],
   <span class="prop">stream</span>: <span class="kw">true</span>,
@@ -113,7 +113,7 @@
 <span class="kw">const</span> <span class="op">instance</span> = <span class="kw">await</span> <span class="fn">createServer</span>([<span class="op">toolFixture</span>]);
 
 <span class="kw">const</span> <span class="op">res</span> = <span class="kw">await</span> <span class="fn">post</span>(<span class="str">`${instance.url}/v1/messages`</span>, {
-  <span class="prop">model</span>: <span class="str">"claude-sonnet-4-20250514"</span>,
+  <span class="prop">model</span>: <span class="str">"claude-sonnet-4-6"</span>,
   <span class="prop">max_tokens</span>: <span class="num">1024</span>,
   <span class="prop">messages</span>: [{ <span class="prop">role</span>: <span class="str">"user"</span>, <span class="prop">content</span>: <span class="str">"what is the weather?"</span> }],
   <span class="prop">stream</span>: <span class="kw">true</span>,
