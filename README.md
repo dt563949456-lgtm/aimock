@@ -73,13 +73,13 @@ See the [GitHub Action docs](https://aimock.copilotkit.dev/github-action) for al
 
 ```bash
 # LLM mocking only
-npx @copilotkit/aimock -p 4010 -f ./fixtures
+npx -p @copilotkit/aimock llmock -p 4010 -f ./fixtures
 
 # Full suite from config
 npx @copilotkit/aimock --config aimock.json
 
 # Record mode: proxy to real APIs, save fixtures
-npx @copilotkit/aimock --record --provider-openai https://api.openai.com
+npx -p @copilotkit/aimock llmock --record --provider-openai https://api.openai.com
 
 # Convert fixtures from other tools
 npx @copilotkit/aimock convert vidaimock ./templates/ ./fixtures/

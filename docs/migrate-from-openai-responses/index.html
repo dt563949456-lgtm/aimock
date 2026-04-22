@@ -297,7 +297,9 @@
             </tr>
             <tr>
               <td style="color: var(--error)">&#10007; No record/replay</td>
-              <td><code>npx aimock --record</code> captures real API calls</td>
+              <td>
+                <code>npx -p @copilotkit/aimock llmock --record</code> captures real API calls
+              </td>
             </tr>
             <tr>
               <td style="color: var(--error)">&#10007; No CI action</td>
@@ -343,7 +345,10 @@
             <h3>Record &amp; Replay</h3>
             <p>
               Proxy real APIs, save as fixtures, replay forever.
-              <code>npx aimock --record --provider-openai https://api.openai.com</code>
+              <code
+                >npx -p @copilotkit/aimock llmock --record --provider-openai
+                https://api.openai.com</code
+              >
             </p>
           </div>
           <div class="feature-card">
@@ -403,7 +408,7 @@
           <div class="tab-cli">
             <div class="code-block">
               <div class="code-block-header">CLI <span class="lang-tag">sh</span></div>
-              <pre><code>npx aimock -p <span class="num">4010</span> -f ./fixtures</code></pre>
+              <pre><code>npx -p @copilotkit/aimock llmock -p <span class="num">4010</span> -f ./fixtures</code></pre>
             </div>
           </div>
           <div class="tab-docker">
