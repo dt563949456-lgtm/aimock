@@ -193,18 +193,24 @@ if (values.record || values["proxy-only"]) {
     process.exit(1);
   }
 
-  // For record mode, use the first --fixtures value as the base path.
-  // Remote URL sources are not supported as record destinations — bail out with a clear error.
+  // For --record, the first --fixtures value is the base path for the recording
+  // destination and must be a local filesystem path — writing to a URL is not supported.
+  // For --proxy-only, unmatched requests are forwarded without saving, so no writable
+  // destination is required; URL-only --fixtures is valid in that mode.
   const recordBase = fixtureValues[0];
-  if (/^https?:\/\//i.test(recordBase)) {
+  const recordBaseIsUrl = /^https?:\/\//i.test(recordBase);
+  if (values.record && recordBaseIsUrl) {
     console.error(
-      `Error: --record/--proxy-only requires a local --fixtures path for the recording destination; got URL ${recordBase}`,
+      `Error: --record requires a local --fixtures path for the recording destination; got URL ${recordBase}`,
     );
     process.exit(1);
   }
   record = {
     providers,
-    fixturePath: resolve(recordBase, "recorded"),
+    // In proxy-only mode with only URL sources, fixturePath is never consumed
+    // (recorder.ts skips disk writes when proxyOnly is set). Leave it undefined
+    // rather than resolving a URL string as a filesystem path.
+    fixturePath: recordBaseIsUrl ? undefined : resolve(recordBase, "recorded"),
     proxyOnly: values["proxy-only"],
   };
 }
@@ -216,17 +222,23 @@ if (values["agui-record"] || values["agui-proxy-only"]) {
     console.error("Error: --agui-record/--agui-proxy-only requires --agui-upstream");
     process.exit(1);
   }
+  // --agui-record writes recorded AG-UI fixtures to disk, so a URL source is unsupported.
+  // --agui-proxy-only forwards without saving, so URL-only --fixtures is valid.
   const aguiBase = fixtureValues[0];
-  if (/^https?:\/\//i.test(aguiBase)) {
+  const aguiBaseIsUrl = /^https?:\/\//i.test(aguiBase);
+  if (values["agui-record"] && aguiBaseIsUrl) {
     console.error(
-      `Error: --agui-record/--agui-proxy-only requires a local --fixtures path for the recording destination; got URL ${aguiBase}`,
+      `Error: --agui-record requires a local --fixtures path for the recording destination; got URL ${aguiBase}`,
     );
     process.exit(1);
   }
   const agui = new AGUIMock();
   agui.enableRecording({
     upstream: values["agui-upstream"],
-    fixturePath: resolve(aguiBase, "agui-recorded"),
+    // In proxy-only mode with a URL-only --fixtures, the AG-UI recorder never
+    // writes to disk (see agui-recorder.ts). Leave fixturePath undefined rather
+    // than resolving a URL as a filesystem path.
+    fixturePath: aguiBaseIsUrl ? undefined : resolve(aguiBase, "agui-recorded"),
     proxyOnly: values["agui-proxy-only"],
   });
   aguiMount = { path: "/agui", handler: agui };
