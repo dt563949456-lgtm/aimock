@@ -603,3 +603,162 @@ describe.skipIf(!CLI_AVAILABLE)("CLI: remote --fixtures URLs", () => {
     }
   });
 });
+
+/* ================================================================== */
+/* --proxy-only with URL-only --fixtures (v1.14.8 regression)          */
+/* ================================================================== */
+
+describe.skipIf(!CLI_AVAILABLE)("CLI: --proxy-only with URL-only --fixtures", () => {
+  let cacheDir: string;
+  let envBackup: string | undefined;
+  let allowPrivateBackup: string | undefined;
+
+  beforeEach(() => {
+    cacheDir = mkdtempSync(join(tmpdir(), "aimock-cli-proxy-url-cache-"));
+    envBackup = process.env.XDG_CACHE_HOME;
+    process.env.XDG_CACHE_HOME = cacheDir;
+    // Remote-fixture SSRF denylist rejects 127.0.0.1 by default.
+    allowPrivateBackup = process.env.AIMOCK_ALLOW_PRIVATE_URLS;
+    process.env.AIMOCK_ALLOW_PRIVATE_URLS = "1";
+  });
+
+  afterEach(() => {
+    if (envBackup === undefined) delete process.env.XDG_CACHE_HOME;
+    else process.env.XDG_CACHE_HOME = envBackup;
+    if (allowPrivateBackup === undefined) delete process.env.AIMOCK_ALLOW_PRIVATE_URLS;
+    else process.env.AIMOCK_ALLOW_PRIVATE_URLS = allowPrivateBackup;
+    rmSync(cacheDir, { recursive: true, force: true });
+  });
+
+  it("starts successfully with --proxy-only and a URL-only --fixtures source", async () => {
+    const fixtureServer = await startHttpServer((_req, res) => {
+      res.writeHead(200, { "content-type": "application/json" });
+      res.end(REMOTE_FIXTURE_BODY);
+    });
+    // Dummy upstream provider target — proxy-only never proxies unmatched reqs in this test,
+    // but --provider-openai must be set so the recordConfig gate accepts the invocation.
+    const upstream = await startHttpServer((_req, res) => {
+      res.writeHead(200);
+      res.end("ok");
+    });
+    try {
+      const child = spawnCli([
+        "--proxy-only",
+        "--provider-openai",
+        upstream.url,
+        "--fixtures",
+        `${fixtureServer.url}/fx.json`,
+        "--port",
+        "0",
+      ]);
+      await child.waitForOutput(/listening on/i, 8000);
+      // Must load the remote fixture and NOT error with the recordBase URL message.
+      expect(child.stdout()).toContain("Loaded 1 fixture(s)");
+      expect(child.stderr()).not.toMatch(
+        /requires a local --fixtures path for the recording destination/,
+      );
+      child.kill("SIGTERM");
+      await new Promise<void>((resolve) => {
+        child.cp.on("close", () => resolve());
+      });
+    } finally {
+      await fixtureServer.close();
+      await upstream.close();
+    }
+  });
+
+  it("preserves --record rejection of URL-only --fixtures (regression guard)", async () => {
+    // --record writes to disk, so a URL source is genuinely unsupported. Must still error.
+    const { stderr, code } = await runCli(
+      [
+        "--record",
+        "--provider-openai",
+        "http://127.0.0.1:59999",
+        "--fixtures",
+        "http://127.0.0.1:59998/fx.json",
+        "--port",
+        "0",
+      ],
+      { timeout: 5000 },
+    );
+    expect(stderr).toMatch(/requires a local --fixtures path for the recording destination/);
+    expect(code).toBe(1);
+  });
+
+  it("accepts --proxy-only with mixed local + URL --fixtures", async () => {
+    const fixtureServer = await startHttpServer((_req, res) => {
+      res.writeHead(200, { "content-type": "application/json" });
+      res.end(REMOTE_FIXTURE_BODY);
+    });
+    const upstream = await startHttpServer((_req, res) => {
+      res.writeHead(200);
+      res.end("ok");
+    });
+    const tmp = mkdtempSync(join(tmpdir(), "cli-mixed-fixtures-"));
+    try {
+      const localPath = join(tmp, "local.json");
+      writeFileSync(
+        localPath,
+        JSON.stringify({
+          fixtures: [{ match: { userMessage: "local" }, response: { content: "local response" } }],
+        }),
+        "utf-8",
+      );
+      const child = spawnCli([
+        "--proxy-only",
+        "--provider-openai",
+        upstream.url,
+        "--fixtures",
+        localPath,
+        "--fixtures",
+        `${fixtureServer.url}/fx.json`,
+        "--port",
+        "0",
+      ]);
+      await child.waitForOutput(/listening on/i, 8000);
+      expect(child.stdout()).toContain("Loaded 2 fixture(s)");
+      child.kill("SIGTERM");
+      await new Promise<void>((resolve) => {
+        child.cp.on("close", () => resolve());
+      });
+    } finally {
+      await fixtureServer.close();
+      await upstream.close();
+      rmSync(tmp, { recursive: true, force: true });
+    }
+  });
+
+  it("starts successfully with --agui-proxy-only and URL-only --fixtures", async () => {
+    const fixtureServer = await startHttpServer((_req, res) => {
+      res.writeHead(200, { "content-type": "application/json" });
+      res.end(REMOTE_FIXTURE_BODY);
+    });
+    const aguiUpstream = await startHttpServer((_req, res) => {
+      res.writeHead(200);
+      res.end("ok");
+    });
+    try {
+      const child = spawnCli([
+        "--agui-proxy-only",
+        "--agui-upstream",
+        aguiUpstream.url,
+        "--fixtures",
+        `${fixtureServer.url}/fx.json`,
+        "--port",
+        "0",
+      ]);
+      await child.waitForOutput(/listening on/i, 8000);
+      expect(child.stdout()).toContain("Loaded 1 fixture(s)");
+      expect(child.stderr()).not.toMatch(
+        /requires a local --fixtures path for the recording destination/,
+      );
+      child.kill("SIGTERM");
+      await new Promise<void>((resolve) => {
+        child.cp.on("close", () => resolve());
+      });
+    } finally {
+      await fixtureServer.close();
+      await aguiUpstream.close();
+    }
+  });
+});
