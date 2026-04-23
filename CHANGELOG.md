@@ -1,6 +1,6 @@
 # @copilotkit/aimock
 
-## Unreleased
+## 1.15.0
 
 ### Added
 
