@@ -1,5 +1,17 @@
 # @copilotkit/aimock
 
+## 1.14.8
+
+### Fixed
+
+- `--proxy-only` mode now accepts URL-only `--fixtures` sources without requiring a local
+  filesystem path. Previously the first `--fixtures` value was always checked as a
+  record-destination base path, which rejected all-URL invocations even though proxy-only
+  mode doesn't write recordings to disk. The check now fires only for `--record` mode
+  where a writable destination is actually required. Same fix applied to the parallel
+  `--agui-proxy-only` CLI path. Unblocks the showcase-aimock Railway service which runs
+  aimock in proxy-only mode with remote GitHub raw fixture URLs and no local fallback.
+
 ## 1.14.7
 
 ### Added
