@@ -1,15 +1,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
   <rect width="1200" height="630" fill="#0a0a0f"/>
-  <text x="600" y="240" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="72" font-weight="700" fill="#ffffff">
-    <tspan fill="#00ff88">$</tspan> aimock
-  </text>
-  <text x="600" y="320" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="28" fill="#888899">
+  <!-- Bot icon (scaled up from 32x32 to ~120px, centered at x=600) -->
+  <g transform="translate(540, 80) scale(3.75)">
+    <circle cx="16" cy="19" r="7.5" fill="none" stroke="#00ff88" stroke-width="2"/>
+    <circle cx="13.5" cy="18" r="1.5" fill="#00ff88"/>
+    <circle cx="18.5" cy="18" r="1.5" fill="#00ff88"/>
+    <polyline points="16,11.5 14,9 18,7 16,4.5" fill="none" stroke="#00ff88" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="16" cy="4.5" r="1.5" fill="#00ff88"/>
+  </g>
+  <text x="600" y="280" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="72" font-weight="700" fill="#ffffff">aimock</text>
+  <text x="600" y="350" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="28" fill="#888899">
     Mock everything your AI app talks to
   </text>
-  <text x="600" y="400" text-anchor="middle" font-family="monospace" font-size="20" fill="#555566">
+  <text x="600" y="420" text-anchor="middle" font-family="monospace" font-size="20" fill="#555566">
     LLM APIs  |  MCP  |  A2A  |  Vector DBs  |  Search
   </text>
-  <text x="600" y="540" text-anchor="middle" font-family="monospace" font-size="18" fill="#00ff88">
+  <text x="600" y="550" text-anchor="middle" font-family="monospace" font-size="18" fill="#00ff88">
     npm install @copilotkit/aimock
   </text>
 </svg>
