@@ -381,6 +381,7 @@ async function handleCompletions(
   let raw: string;
   try {
     raw = await readBody(req);
+    defaults.logger.warn(`[DEBUG-COMPLETIONS] readBody OK | bodyLen=${raw.length}`);
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Failed to read request body";
     defaults.logger.warn(`[DEBUG-COMPLETIONS] readBody FAILED: ${msg}`);
