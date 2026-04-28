@@ -383,6 +383,7 @@ async function handleCompletions(
     raw = await readBody(req);
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Failed to read request body";
+    defaults.logger.warn(`[DEBUG-COMPLETIONS] readBody FAILED: ${msg}`);
     journal.add({
       method: req.method ?? "POST",
       path: req.url ?? COMPLETIONS_PATH,
@@ -411,7 +412,11 @@ async function handleCompletions(
     if (modelFallback && !body.model) {
       body.model = modelFallback;
     }
-  } catch {
+  } catch (parseErr) {
+    const parseMsg = parseErr instanceof Error ? parseErr.message : String(parseErr);
+    defaults.logger.warn(
+      `[DEBUG-COMPLETIONS] JSON.parse FAILED: ${parseMsg} | bodyLen=${raw.length}`,
+    );
     journal.add({
       method: req.method ?? "POST",
       path: req.url ?? COMPLETIONS_PATH,
@@ -435,6 +440,9 @@ async function handleCompletions(
 
   // Validate messages array
   if (!Array.isArray(body.messages)) {
+    defaults.logger.warn(
+      `[DEBUG-COMPLETIONS] messages validation FAILED: keys=${Object.keys(body).join(",")}`,
+    );
     journal.add({
       method: req.method ?? "POST",
       path: req.url ?? COMPLETIONS_PATH,
