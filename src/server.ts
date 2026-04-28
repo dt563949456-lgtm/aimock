@@ -372,6 +372,11 @@ async function handleCompletions(
 ): Promise<void> {
   setCorsHeaders(res);
 
+  // DEBUG: confirm handleCompletions entry
+  defaults.logger.warn(
+    `[DEBUG-COMPLETIONS] entered | provider=${providerKey ?? "?"} | fixtures=${fixtures.length}`,
+  );
+
   // Read request body
   let raw: string;
   try {
