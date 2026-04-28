@@ -558,6 +558,14 @@ async function handleCompletions(
   const latency = fixture.latency ?? defaults.latency;
   const chunkSize = Math.max(1, fixture.chunkSize ?? defaults.chunkSize);
 
+  // DEBUG: log MOCK response with key details
+  defaults.logger.warn(
+    `[DEBUG-SERVER] → MOCK responding | ` +
+      `hasContent=${isTextResponse(response) || isContentWithToolCallsResponse(response)} | ` +
+      `hasToolCalls=${Array.isArray(response.toolCalls) && response.toolCalls.length > 0} | ` +
+      `latency=${latency}ms | chunkSize=${chunkSize}`,
+  );
+
   // Error response
   if (isErrorResponse(response)) {
     const status = response.status ?? 500;
@@ -886,6 +894,13 @@ export async function createServer(
     if (!azureDeploymentId) {
       pathname = normalizeCompatPath(pathname, logger);
     }
+
+    // DEBUG: log every incoming request
+    defaults.logger.warn(
+      `[DEBUG-REQ] ← ${req.method} ${pathname} | ` +
+        `host=${req.headers.host ?? "?"} | ` +
+        `content-type=${(req.headers["content-type"] as string)?.slice(0, 40) ?? "?"}`,
+    );
 
     // Health / readiness probes
     if (pathname === HEALTH_PATH && req.method === "GET") {
