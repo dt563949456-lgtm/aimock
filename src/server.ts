@@ -464,6 +464,13 @@ async function handleCompletions(
     journal.incrementFixtureMatchCount(fixture, fixtures, testId);
   }
 
+  // DEBUG: log match vs proxy decision
+  defaults.logger.warn(
+    `[DEBUG-SERVER] matchFixture=${fixture ? "HIT" : "MISS"} | ` +
+      `fixtures=${fixtures.length} | record=${!!defaults.record} | ` +
+      `provider=${providerKey ?? "none"} | path=${req.url ?? "?"}`,
+  );
+
   const method = req.method ?? "POST";
   const path = req.url ?? COMPLETIONS_PATH;
   const flatHeaders = flattenHeaders(req.headers);
@@ -491,6 +498,9 @@ async function handleCompletions(
   if (!fixture) {
     // Try record-and-replay proxy if configured
     if (defaults.record && providerKey) {
+      defaults.logger.warn(
+        `[DEBUG-SERVER] → PROXYING to upstream (${providerKey}) | fixtures=${fixtures.length}`,
+      );
       const proxied = await proxyAndRecord(
         req,
         res,

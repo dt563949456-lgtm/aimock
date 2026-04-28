@@ -39,6 +39,28 @@ export function matchFixture(
   const effective = requestTransform ? requestTransform(req) : req;
   const useExactMatch = !!requestTransform;
 
+  // DEBUG: entry context
+  const lastUserMsg = (() => {
+    const msgs = effective.messages ?? [];
+    for (let i = msgs.length - 1; i >= 0; i--) {
+      if (msgs[i].role === "user") {
+        const c = msgs[i].content;
+        const text =
+          typeof c === "string"
+            ? c
+            : Array.isArray(c)
+              ? c.map((b: { text?: string }) => b.text ?? "").join("")
+              : "";
+        return text.slice(0, 80);
+      }
+    }
+    return "(none)";
+  })();
+  const msgCount = effective.messages?.length ?? 0;
+  const hasToolResults = (effective.messages ?? []).some(
+    (m: { role?: string }) => m.role === "tool",
+  );
+
   for (const fixture of fixtures) {
     const { match } = fixture;
 
@@ -139,6 +161,15 @@ export function matchFixture(
       const count = matchCounts.get(fixture) ?? 0;
       if (count !== match.sequenceIndex) continue;
     }
+
+    // DEBUG: log when a fixture matches
+    logger?.warn(
+      `[DEBUG-MATCH] HIT! userMessage=${typeof match.userMessage === "string" ? JSON.stringify(match.userMessage.slice(0, 60)) : match.userMessage} | ` +
+        `seqIdx=${match.sequenceIndex ?? "undef"} | count=${matchCounts?.get(fixture) ?? "N/A"} | ` +
+        `msgs=${msgCount} | hasToolResults=${hasToolResults} | ` +
+        `lastUser="${lastUserMsg}" | ` +
+        `toolCalls=${Array.isArray(fixture.response.toolCalls) && fixture.response.toolCalls.length > 0}`,
+    );
 
     return fixture;
   }

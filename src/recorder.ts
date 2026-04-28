@@ -223,6 +223,13 @@ export async function proxyAndRecord(
   // Build and save the fixture
   const fixture: Fixture = { match: fixtureMatch, response: fixtureResponse };
 
+  // DEBUG: log what match criteria were produced for this recorded fixture
+  defaults.logger.warn(
+    `[DEBUG-RECORD] buildFixtureMatch result: ${JSON.stringify(fixtureMatch)} | ` +
+      `response has toolCalls: ${Array.isArray(fixtureResponse.toolCalls) && fixtureResponse.toolCalls.length > 0} | ` +
+      `message count in request: ${request.messages?.length ?? 0}`,
+  );
+
   // Check if the match is empty (all undefined values) — warn but still save to disk
   const matchValues = Object.values(fixtureMatch);
   const isEmptyMatch = matchValues.length === 0 || matchValues.every((v) => v === undefined);
